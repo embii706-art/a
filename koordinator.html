@@ -106,7 +106,7 @@
         </div>
         <h2 class="text-2xl font-extrabold text-brand-primary mb-2">Akses Ditolak</h2>
         <p class="text-slate-500 text-sm mb-6">Halaman ini khusus Koordinator.</p>
-        <a href="../login.html" class="block w-full bg-brand-primary text-white py-3 rounded-xl font-bold hover:bg-slate-800 transition-colors">Kembali</a>
+        <a href="login.html" class="block w-full bg-brand-primary text-white py-3 rounded-xl font-bold hover:bg-slate-800 transition-colors">Kembali</a>
     </div>
   </div>
 
@@ -754,7 +754,7 @@
     let widgetTimer = null;
 
     onAuthStateChanged(auth, async user => {
-        if(!user) return location.href = "../login.html";
+        if(!user) return location.href = "login.html";
         toggleLoader(true);
         try {
             const snap = await getDoc(doc(db,"users",user.uid));
@@ -1220,7 +1220,7 @@
       try { writeAudit("logout", {}); } catch(e){}
       if(widgetTimer) clearInterval(widgetTimer);
       await signOut(auth);
-      location.href = "../login.html";
+      location.href = "login.html";
     };
   </script>
 </body>
