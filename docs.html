@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KARTEJI - Documentation Hub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .doc-card:hover { transform: translateY(-4px); transition: all 0.3s ease; }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 min-h-screen text-white">
+  
+  <!-- Background Effects -->
+  <div class="fixed inset-0 -z-10 overflow-hidden">
+    <div class="absolute -top-40 -right-40 w-80 h-80 bg-purple-500/30 rounded-full blur-3xl animate-pulse"></div>
+    <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500/30 rounded-full blur-3xl animate-pulse" style="animation-delay: 1s;"></div>
+  </div>
+
+  <div class="container mx-auto px-4 py-12">
+    
+    <!-- Header -->
+    <div class="text-center mb-12">
+      <div class="inline-flex items-center gap-3 mb-4">
+        <div class="w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-xl flex items-center justify-center border border-white/20">
+          <span class="material-symbols-rounded text-4xl text-purple-300">diversity_3</span>
+        </div>
+        <div class="text-left">
+          <h1 class="text-4xl font-extrabold">KARTEJI</h1>
+          <p class="text-sm text-purple-300 font-bold">Documentation Hub v2.0</p>
+        </div>
+      </div>
+      <p class="text-xl text-slate-300 max-w-2xl mx-auto">
+        Struktur modular baru untuk sistem manajemen organisasi
+      </p>
+    </div>
+
+    <!-- Status Badge -->
+    <div class="flex justify-center mb-8">
+      <div class="inline-flex items-center gap-2 px-6 py-3 bg-green-500/20 border border-green-400/30 rounded-full backdrop-blur-xl">
+        <span class="material-symbols-rounded text-green-400">check_circle</span>
+        <span class="font-bold text-green-300">Struktur Baru Siap Digunakan</span>
+      </div>
+    </div>
+
+    <!-- Quick Links -->
+    <div class="max-w-5xl mx-auto mb-12">
+      <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
+        <span class="material-symbols-rounded text-purple-400">description</span>
+        Dokumentasi
+      </h2>
+      
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+        
+        <!-- README -->
+        <a href="./README.md" class="doc-card block p-6 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 hover:border-purple-400/50">
+          <div class="flex items-start gap-3 mb-3">
+            <span class="material-symbols-rounded text-3xl text-blue-400">description</span>
+            <div>
+              <h3 class="font-bold text-lg">README.md</h3>
+              <p class="text-xs text-slate-300">Dokumentasi Lengkap</p>
+            </div>
+          </div>
+          <p class="text-sm text-slate-400">Penjelasan detail struktur baru, modul, dan cara penggunaan</p>
+        </a>
+
+        <!-- SETUP -->
+        <a href="./SETUP.md" class="doc-card block p-6 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 hover:border-green-400/50">
+          <div class="flex items-start gap-3 mb-3">
+            <span class="material-symbols-rounded text-3xl text-green-400">rocket_launch</span>
+            <div>
+              <h3 class="font-bold text-lg">SETUP.md</h3>
+              <p class="text-xs text-slate-300">Quick Start Guide</p>
+            </div>
+          </div>
+          <p class="text-sm text-slate-400">Panduan setup dan memulai menggunakan struktur baru</p>
+        </a>
+
+        <!-- MIGRATION -->
+        <a href="./MIGRATION.md" class="doc-card block p-6 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 hover:border-yellow-400/50">
+          <div class="flex items-start gap-3 mb-3">
+            <span class="material-symbols-rounded text-3xl text-yellow-400">swap_horiz</span>
+            <div>
+              <h3 class="font-bold text-lg">MIGRATION.md</h3>
+              <p class="text-xs text-slate-300">Panduan Migrasi</p>
+            </div>
+          </div>
+          <p class="text-sm text-slate-400">Cara migrate halaman existing ke struktur baru</p>
+        </a>
+
+        <!-- CHANGELOG -->
+        <a href="./CHANGELOG.md" class="doc-card block p-6 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 hover:border-orange-400/50">
+          <div class="flex items-start gap-3 mb-3">
+            <span class="material-symbols-rounded text-3xl text-orange-400">history</span>
+            <div>
+              <h3 class="font-bold text-lg">CHANGELOG.md</h3>
+              <p class="text-xs text-slate-300">Log Perubahan</p>
+            </div>
+          </div>
+          <p class="text-sm text-slate-400">Semua perubahan yang dilakukan pada project</p>
+        </a>
+
+        <!-- SUMMARY -->
+        <a href="./SUMMARY.md" class="doc-card block p-6 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 hover:border-pink-400/50">
+          <div class="flex items-start gap-3 mb-3">
+            <span class="material-symbols-rounded text-3xl text-pink-400">summarize</span>
+            <div>
+              <h3 class="font-bold text-lg">SUMMARY.md</h3>
+              <p class="text-xs text-slate-300">Ringkasan</p>
+            </div>
+          </div>
+          <p class="text-sm text-slate-400">Ringkasan lengkap struktur baru dan next steps</p>
+        </a>
+
+        <!-- Template -->
+        <a href="./template.html" target="_blank" class="doc-card block p-6 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 hover:border-purple-400/50">
+          <div class="flex items-start gap-3 mb-3">
+            <span class="material-symbols-rounded text-3xl text-purple-400">code</span>
+            <div>
+              <h3 class="font-bold text-lg">template.html</h3>
+              <p class="text-xs text-slate-300">Contoh Implementasi</p>
+            </div>
+          </div>
+          <p class="text-sm text-slate-400">Template halaman dengan struktur baru</p>
+        </a>
+
+      </div>
+    </div>
+
+    <!-- Structure Overview -->
+    <div class="max-w-5xl mx-auto mb-12">
+      <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
+        <span class="material-symbols-rounded text-purple-400">folder</span>
+        Struktur Folder
+      </h2>
+      
+      <div class="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 p-6">
+        <pre class="text-sm text-slate-300 overflow-x-auto"><code>├── config/              # Konfigurasi
+│   ├── firebase.js     # Firebase (TIDAK DIUBAH)
+│   ├── cloudinary.js   # Cloudinary (TIDAK DIUBAH)
+│   └── roles.js        # Role definitions
+│
+├── utils/              # Utility functions
+│   ├── firebase-utils.js
+│   ├── cloudinary-utils.js
+│   ├── helpers.js
+│   ├── theme.js
+│   └── validation.js
+│
+├── components/         # Reusable components
+│   ├── loader.js
+│   ├── header.js
+│   ├── modal.js
+│   └── toast.js
+│
+└── assets/            # Static assets
+    └── styles.css     # Global styles</code></pre>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="max-w-5xl mx-auto">
+      <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
+        <span class="material-symbols-rounded text-purple-400">play_circle</span>
+        Quick Actions
+      </h2>
+      
+      <div class="grid md:grid-cols-2 gap-4">
+        
+        <!-- Start Server -->
+        <div class="p-6 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20">
+          <h3 class="font-bold text-lg mb-3 flex items-center gap-2">
+            <span class="material-symbols-rounded text-green-400">terminal</span>
+            Start Local Server
+          </h3>
+          <code class="block p-3 bg-black/30 rounded-lg text-sm text-green-300 mb-3">
+            python3 -m http.server 8000
+          </code>
+          <p class="text-xs text-slate-400">Lalu buka: <a href="http://localhost:8000" class="text-purple-400 underline">http://localhost:8000</a></p>
+        </div>
+
+        <!-- Test Structure -->
+        <div class="p-6 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20">
+          <h3 class="font-bold text-lg mb-3 flex items-center gap-2">
+            <span class="material-symbols-rounded text-blue-400">fact_check</span>
+            Test Structure
+          </h3>
+          <code class="block p-3 bg-black/30 rounded-lg text-sm text-blue-300 mb-3">
+            ./test-structure.sh
+          </code>
+          <p class="text-xs text-slate-400">Check apakah semua file sudah ada</p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Applications -->
+    <div class="max-w-5xl mx-auto mt-12">
+      <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
+        <span class="material-symbols-rounded text-purple-400">apps</span>
+        Aplikasi
+      </h2>
+      
+      <div class="grid md:grid-cols-3 gap-4">
+        
+        <a href="./dashboard.html" class="doc-card block p-4 bg-white/10 backdrop-blur-xl rounded-xl border border-white/20 text-center hover:border-purple-400/50">
+          <span class="material-symbols-rounded text-3xl text-purple-400 block mb-2">login</span>
+          <h3 class="font-bold">Dashboard</h3>
+          <p class="text-xs text-slate-400">Login / Verifikasi</p>
+        </a>
+
+        <a href="./karteji-unified.html" class="doc-card block p-4 bg-white/10 backdrop-blur-xl rounded-xl border border-white/20 text-center hover:border-blue-400/50">
+          <span class="material-symbols-rounded text-3xl text-blue-400 block mb-2">dashboard</span>
+          <h3 class="font-bold">Unified</h3>
+          <p class="text-xs text-slate-400">All in One</p>
+        </a>
+
+        <a href="./template.html" target="_blank" class="doc-card block p-4 bg-gradient-to-br from-purple-500/20 to-pink-500/20 backdrop-blur-xl rounded-xl border border-purple-400/50 text-center">
+          <span class="material-symbols-rounded text-3xl text-purple-300 block mb-2">new_releases</span>
+          <h3 class="font-bold">Template</h3>
+          <p class="text-xs text-purple-300">NEW Structure</p>
+        </a>
+
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="text-center mt-16 pt-8 border-t border-white/10">
+      <p class="text-slate-400 text-sm">
+        KARTEJI v2.0.0 - Struktur Modular Baru
+      </p>
+      <p class="text-slate-500 text-xs mt-2">
+        Created: January 14, 2026 | Status: ✅ Ready
+      </p>
+    </div>
+
+  </div>
+
+</body>
+</html>

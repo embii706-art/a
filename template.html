@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0B1120" />
+  <title>KARTEJI - Template Page</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Material Icons -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24..48,400,1,0" />
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="./assets/styles.css">
+
+  <!-- Tailwind Config -->
+  <script>
+    tailwind.config = {
+      darkMode: ['class', '[data-theme="dark"]'],
+      theme: {
+        extend: {
+          fontFamily: { 
+            sans: ['Plus Jakarta Sans', 'system-ui', 'Segoe UI', 'Roboto', 'sans-serif'] 
+          },
+          colors: {
+            brand: { primary: '#0F172A' },
+            accent: { DEFAULT: '#F97316', glow: '#FDBA74' }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+  <!-- Background -->
+  <div class="fixed inset-0 -z-10">
+    <div class="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-950 to-purple-950/40"></div>
+    <div class="absolute -top-24 -right-24 w-96 h-96 bg-purple-600/20 blur-3xl rounded-full animate-blob"></div>
+    <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-emerald-500/10 blur-3xl rounded-full animate-blob" style="animation-delay: 2s;"></div>
+  </div>
+
+  <!-- Loader -->
+  <div id="shellLoader" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-[9999] hidden items-center justify-center">
+    <div class="flex flex-col items-center gap-3">
+      <div class="w-12 h-12 border-4 border-slate-700 border-t-purple-400 rounded-full animate-spin"></div>
+      <p class="text-xs font-black tracking-widest text-slate-300">MEMUAT...</p>
+    </div>
+  </div>
+
+  <!-- Header will be inserted here -->
+  <div id="headerContainer"></div>
+
+  <!-- Main Content -->
+  <main class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+      <h1 class="text-3xl font-extrabold mb-6 animate-slide-up">Template Page</h1>
+      
+      <div class="glass-card rounded-2xl p-6 animate-slide-up" style="animation-delay: 0.1s;">
+        <p class="text-slate-300 mb-4">
+          Ini adalah template halaman yang menggunakan struktur baru. 
+          Semua konfigurasi Firebase dan Cloudinary tetap sama, tidak diubah.
+        </p>
+        
+        <div class="flex gap-2 flex-wrap">
+          <button id="btnShowModal" class="px-4 py-2 bg-purple-500 text-white rounded-xl font-bold hover:bg-purple-600 transition tap">
+            Show Modal
+          </button>
+          <button id="btnShowToast" class="px-4 py-2 bg-blue-500 text-white rounded-xl font-bold hover:bg-blue-600 transition tap">
+            Show Toast
+          </button>
+          <button id="btnConfirm" class="px-4 py-2 bg-green-500 text-white rounded-xl font-bold hover:bg-green-600 transition tap">
+            Confirm Dialog
+          </button>
+          <button id="btnToggleTheme" class="px-4 py-2 bg-slate-700 text-white rounded-xl font-bold hover:bg-slate-600 transition tap">
+            Toggle Theme
+          </button>
+        </div>
+      </div>
+
+      <div class="glass-card rounded-2xl p-6 mt-6 animate-slide-up" style="animation-delay: 0.2s;">
+        <h2 class="text-xl font-bold mb-4">User Info</h2>
+        <div id="userInfo" class="text-slate-300">
+          <p>Loading user info...</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Scripts -->
+  <script type="module">
+    // Import utilities dan components dari struktur baru
+    import { auth, checkAuth, getUserRole, handleLogout } from './utils/firebase-utils.js';
+    import { createHeader, initHeaderEvents } from './components/header.js';
+    import { createModal, showModal, confirmDialog } from './components/modal.js';
+    import { toastSuccess, toastInfo } from './components/toast.js';
+    import { showLoader, hideLoader } from './components/loader.js';
+    import { toggleTheme } from './utils/theme.js';
+
+    // Initialize page
+    async function init() {
+      showLoader();
+
+      try {
+        // Check authentication
+        const user = await checkAuth();
+        if (!user) {
+          window.location.href = '/dashboard.html';
+          return;
+        }
+
+        // Get user role
+        const role = await getUserRole(user.uid);
+        
+        // Create and insert header
+        const headerHTML = createHeader({
+          title: 'KARTEJI',
+          showLogout: true,
+          showThemeToggle: true,
+          role: role || 'User'
+        });
+        document.getElementById('headerContainer').innerHTML = headerHTML;
+        
+        // Initialize header events
+        initHeaderEvents(async () => {
+          const confirmed = await confirmDialog({
+            title: 'Logout',
+            message: 'Apakah Anda yakin ingin keluar?',
+            confirmText: 'Ya, Keluar',
+            cancelText: 'Batal'
+          });
+          
+          if (confirmed) {
+            await handleLogout();
+          }
+        });
+
+        // Display user info
+        document.getElementById('userInfo').innerHTML = `
+          <div class="space-y-2">
+            <p><strong>Email:</strong> ${user.email}</p>
+            <p><strong>Role:</strong> ${role || 'N/A'}</p>
+            <p><strong>User ID:</strong> ${user.uid}</p>
+          </div>
+        `;
+
+        // Setup demo buttons
+        setupDemoButtons();
+
+      } catch (error) {
+        console.error('Error initializing page:', error);
+        alert('Terjadi kesalahan: ' + error.message);
+      } finally {
+        hideLoader();
+      }
+    }
+
+    // Setup demo buttons
+    function setupDemoButtons() {
+      // Show modal button
+      document.getElementById('btnShowModal').addEventListener('click', () => {
+        const modal = createModal({
+          id: 'demoModal',
+          title: 'Demo Modal',
+          content: '<p class="text-slate-300">Ini adalah contoh modal menggunakan komponen baru!</p>',
+          confirmText: 'OK',
+          cancelText: 'Tutup'
+        });
+        
+        modal.querySelector('.modal-confirm').addEventListener('click', () => {
+          toastSuccess('Modal confirmed!');
+          document.getElementById('demoModal').remove();
+        });
+        
+        showModal('demoModal');
+      });
+
+      // Show toast button
+      document.getElementById('btnShowToast').addEventListener('click', () => {
+        toastInfo('Ini adalah notifikasi toast!');
+      });
+
+      // Confirm dialog button
+      document.getElementById('btnConfirm').addEventListener('click', async () => {
+        const confirmed = await confirmDialog({
+          title: 'Konfirmasi',
+          message: 'Apakah Anda yakin ingin melanjutkan?',
+          confirmText: 'Ya',
+          cancelText: 'Tidak'
+        });
+        
+        if (confirmed) {
+          toastSuccess('Anda memilih Ya!');
+        } else {
+          toastInfo('Anda memilih Tidak!');
+        }
+      });
+
+      // Toggle theme button
+      document.getElementById('btnToggleTheme').addEventListener('click', () => {
+        const newTheme = toggleTheme();
+        toastInfo(`Theme changed to ${newTheme}`);
+      });
+    }
+
+    // Start app
+    init();
+  </script>
+</body>
+</html>
