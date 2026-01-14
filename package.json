@@ -1,0 +1,32 @@
+{
+  "name": "karteji-app",
+  "version": "2.0.0",
+  "description": "KARTEJI - Sistem Manajemen Organisasi dengan Struktur Modular",
+  "type": "module",
+  "directories": {
+    "config": "./config",
+    "utils": "./utils",
+    "components": "./components",
+    "assets": "./assets"
+  },
+  "scripts": {
+    "serve": "python3 -m http.server 8000",
+    "dev": "python3 -m http.server 8080"
+  },
+  "keywords": [
+    "karteji",
+    "firebase",
+    "cloudinary",
+    "organization-management"
+  ],
+  "dependencies": {
+    "firebase": "^10.12.5"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/embii706-art/a"
+  },
+  "author": "KARTEJI Team",
+  "license": "ISC"
+}
