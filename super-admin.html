@@ -1,0 +1,1927 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0B1120" />
+  <title>KARTEJI (Pro Secured)</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24..48,400,1,0" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: ['class', '[data-theme="dark"]'],
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Plus Jakarta Sans', 'system-ui', 'Segoe UI', 'Roboto', 'sans-serif'] },
+          colors: {
+            brand: { primary: '#0F172A', light: '#334155', dark: '#0B1120' },
+            accent: { DEFAULT: '#F97316', light: '#FFEDD5', glow: '#FDBA74' }
+          },
+          animation: {
+            'blob': 'blob 11s ease-in-out infinite',
+            'slide-in-top': 'slideInTop .45s cubic-bezier(.25,.46,.45,.94) both',
+            'slideUpSoft': 'slideUpSoft .25s ease-out both',
+            'sheen': 'sheen 1.2s ease-out both',
+          },
+          keyframes: {
+            blob: {
+              '0%': { transform: 'translate(0px, 0px) scale(1)' },
+              '33%': { transform: 'translate(26px, -42px) scale(1.08)' },
+              '66%': { transform: 'translate(-18px, 18px) scale(.92)' },
+              '100%': { transform: 'translate(0px, 0px) scale(1)' },
+            },
+            slideInTop: { '0%': { transform: 'translateY(-80px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } },
+            slideUpSoft: { '0%': { transform: 'translateY(10px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } },
+            sheen: { '0%': { transform: 'translateX(-120%)' }, '100%': { transform: 'translateX(120%)' } }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root{
+      color-scheme: light;
+      --bg0:#f8fafc; --bg1:#ffffff;
+      --fg0:#0f172a; --fg1:rgba(15,23,42,.68);
+      --glass: rgba(255,255,255,.78);
+      --glassBorder: rgba(255,255,255,.55);
+      --glassShadow: 0 18px 60px rgba(2,6,23,.12);
+      --ring: rgba(249,115,22,.35);
+      --nav: rgba(255,255,255,.88);
+      --navBorder: rgba(15,23,42,.06);
+    }
+    html[data-theme="dark"]{
+      color-scheme: dark;
+      --bg0:#050814; --bg1:#0b1223;
+      --fg0:#e5e7eb; --fg1:rgba(229,231,235,.72);
+      --glass: rgba(15,23,42,.55);
+      --glassBorder: rgba(148,163,184,.18);
+      --glassShadow: 0 18px 70px rgba(0,0,0,.40);
+      --ring: rgba(253,186,116,.25);
+      --nav: rgba(15,23,42,.62);
+      --navBorder: rgba(148,163,184,.14);
+    }
+
+    body { background: linear-gradient(180deg, var(--bg0), var(--bg1)); color: var(--fg0); -webkit-tap-highlight-color: transparent; }
+    body::-webkit-scrollbar { display:none; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+
+    .glass-nav{
+      background: var(--nav);
+      backdrop-filter: blur(16px) saturate(130%);
+      -webkit-backdrop-filter: blur(16px) saturate(130%);
+      border-top: 1px solid var(--navBorder);
+      box-shadow: 0 -8px 30px rgba(0,0,0,0.06);
+    }
+    .glass-card{
+      background: var(--glass);
+      backdrop-filter: blur(18px) saturate(130%);
+      -webkit-backdrop-filter: blur(18px) saturate(130%);
+      border: 1px solid var(--glassBorder);
+      box-shadow: var(--glassShadow);
+    }
+    .glass-inset{
+      background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,0));
+      border: 1px solid rgba(255,255,255,.10);
+    }
+
+    .view-section { display:none; opacity:0; transform: translateY(10px); transition: all .28s ease; }
+    .view-section.active { display:block; opacity:1; transform: translateY(0); }
+    .nav-btn.active span { font-variation-settings: 'FILL' 1; color: #F97316; }
+    .nav-btn.active p { color: var(--fg0); font-weight: 800; }
+
+    .tap{ transition: transform .16s ease, filter .16s ease; will-change: transform; }
+    .tap:active{ transform: scale(.992); }
+
+    .focus-ring:focus{ outline:none; }
+    .focus-ring:focus-visible{ box-shadow: 0 0 0 6px var(--ring); }
+
+    .ad-2000{ animation-delay:2000ms; }
+
+    header[data-shrink="true"] .titleWrap h1{ font-size: 1.05rem; }
+    header[data-shrink="true"]{ padding-top: 1.25rem; padding-bottom: .75rem; }
+    header[data-shrink="true"] .chipRow{ opacity: .92; transform: translateY(-1px); }
+
+    @media print {
+      body * { visibility: hidden; }
+      #printArea, #printArea * { visibility: visible; }
+      #printArea { position: absolute; left: 0; top: 0; width: 100%; background: white; padding: 20px; z-index: 9999; }
+      .no-print { display: none !important; }
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      * { animation:none !important; transition:none !important; scroll-behavior:auto !important; }
+    }
+  </style>
+
+  <script>
+    (function(){
+      const saved = localStorage.getItem('kte_theme');
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const theme = saved || (prefersDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+</head>
+
+<body class="min-h-screen relative overflow-x-hidden pb-32 selection:bg-orange-200 selection:text-orange-900">
+
+  <!-- Background blobs (FIXED branding) -->
+  <div class="fixed inset-0 overflow-hidden pointer-events-none -z-10">
+    <div class="absolute inset-0"
+      style="background:
+        radial-gradient(1200px 600px at 18% 8%, rgba(59,130,246,.16), transparent 55%),
+        radial-gradient(900px 520px at 92% 18%, rgba(249,115,22,.14), transparent 55%),
+        radial-gradient(900px 520px at 42% 96%, rgba(99,102,241,.14), transparent 55%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      ">
+    </div>
+    <div class="absolute top-[-12%] left-[-12%] w-96 h-96 rounded-full filter blur-3xl opacity-30 animate-blob"
+         style="background: rgba(59,130,246,.55)"></div>
+    <div class="absolute top-[18%] right-[-12%] w-96 h-96 rounded-full filter blur-3xl opacity-25 animate-blob ad-2000"
+         style="background: rgba(249,115,22,.55)"></div>
+  </div>
+
+  <div id="toastContainer" class="fixed top-4 left-0 right-0 z-[100] flex flex-col items-center gap-2 pointer-events-none px-4"></div>
+
+  <div id="globalLoader" class="fixed inset-0 z-[9999] hidden items-center justify-center flex-col gap-4 backdrop-blur-md"
+       style="background: rgba(255,255,255,.60)">
+    <div class="w-12 h-12 border-4 border-slate-200 border-t-accent rounded-full animate-spin"></div>
+    <p class="text-xs font-extrabold" style="color: rgba(148,163,184,.95)">Memproses data...</p>
+  </div>
+
+  <!-- Universal Modal (FIXED) -->
+  <div id="crudModal" class="fixed inset-0 z-[60] hidden items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm transition-all">
+    <div class="glass-card w-full max-w-md rounded-[2rem] p-6 relative shadow-2xl animate-[slideUpSoft_.25s_ease-out]">
+      <div class="flex justify-between items-center mb-6">
+        <h2 id="modalTitle" class="text-xl font-extrabold uppercase tracking-tight" style="color: var(--fg0)">Judul</h2>
+        <button onclick="closeModal()" class="tap w-9 h-9 rounded-full flex items-center justify-center transition-colors"
+                style="background: rgba(148,163,184,.12); color: rgba(148,163,184,.9)">
+          <span class="material-symbols-rounded text-xl">close</span>
+        </button>
+      </div>
+      <div id="modalBody" class="space-y-4 max-h-[60vh] overflow-y-auto no-scrollbar"></div>
+      <button id="modalSubmitBtn"
+        class="tap focus-ring mt-6 w-full rounded-xl py-4 text-sm font-extrabold shadow-lg overflow-hidden relative group"
+        style="background: linear-gradient(135deg, #0F172A, #111c33); color: white;">
+        SIMPAN
+        <span class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity">
+          <span class="absolute -left-1/2 top-0 h-full w-1/2 bg-white/15 skew-x-[-18deg] animate-sheen"></span>
+        </span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Header (FIXED) -->
+  <header id="appHeader" data-shrink="false" class="sticky top-0 z-30 px-6 pt-8 pb-4">
+    <div class="rounded-[1.75rem] glass-card px-5 py-4">
+      <div class="flex justify-between items-center">
+        <div class="titleWrap">
+          <p id="rolePill" class="text-[10px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded-full w-fit mb-1"
+             style="background: rgba(249,115,22,.14); color: #F97316">Memuat Role...</p>
+          <h1 id="headerName" class="text-xl font-extrabold leading-none">Memuat...</h1>
+        </div>
+
+        <div class="flex gap-2 items-center">
+          <button onclick="openGlobalSearch()" class="tap focus-ring w-10 h-10 rounded-full flex items-center justify-center no-print"
+                  style="background: rgba(148,163,184,.12); color: rgba(148,163,184,.95)" aria-label="Cari">
+            <span class="material-symbols-rounded">search</span>
+          </button>
+
+          <button id="btn-theme" class="tap focus-ring w-10 h-10 rounded-full flex items-center justify-center no-print"
+                  style="background: rgba(148,163,184,.12); color: rgba(148,163,184,.95)" aria-label="Ganti tema">
+            <span id="themeIcon" class="material-symbols-rounded">dark_mode</span>
+          </button>
+
+          <button onclick="location.reload()" class="tap focus-ring w-10 h-10 rounded-full flex items-center justify-center no-print"
+                  style="background: rgba(148,163,184,.12); color: rgba(148,163,184,.95)" aria-label="Refresh">
+            <span class="material-symbols-rounded">refresh</span>
+          </button>
+
+          <button onclick="switchView('profile')" class="relative tap focus-ring rounded-full no-print" aria-label="Profil">
+            <img id="headerPhoto" class="w-10 h-10 rounded-full border-2 border-white shadow-md object-cover" src="https://via.placeholder.com/100" alt="Foto Profil">
+            <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
+          </button>
+        </div>
+      </div>
+
+      <div class="chipRow mt-3 flex flex-wrap items-center gap-2">
+        <span id="clockChip" class="text-[10px] font-extrabold tracking-widest px-2 py-1 rounded-full"
+              style="background: rgba(148,163,184,.12); color: rgba(148,163,184,.95)">--:--</span>
+
+        <span id="todayChip" class="text-[10px] font-extrabold tracking-widest px-2 py-1 rounded-full"
+              style="background: rgba(59,130,246,.12); color: rgba(59,130,246,.95)">TODAY: 0 IN / 0 OUT</span>
+
+        <button id="btnActionCenter" onclick="openActionCenter()" class="tap focus-ring text-[10px] font-extrabold tracking-widest px-3 py-1 rounded-full no-print"
+              style="background: rgba(249,115,22,.14); color: #F97316">
+          ACTION CENTER
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="px-5 mt-1 relative z-10">
+
+    <!-- HOME -->
+    <section id="view-home" class="view-section active">
+
+      <div class="w-full rounded-[2.5rem] p-7 text-white relative overflow-hidden shadow-xl shadow-slate-300 group transition-all"
+           style="background: linear-gradient(135deg, #0F172A, #111c33);">
+        <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity duration-500 transform group-hover:scale-110">
+          <span class="material-symbols-rounded text-9xl">account_balance_wallet</span>
+        </div>
+        <div class="absolute -bottom-10 -left-10 w-40 h-40 blur-3xl opacity-20" style="background:#F97316"></div>
+
+        <div class="relative z-10">
+          <p class="text-[10px] font-extrabold uppercase tracking-widest text-slate-300 mb-1">Total Kas Organisasi</p>
+          <h2 id="cardBalance" class="text-4xl font-black tracking-tight mb-8">Rp 0</h2>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div class="bg-white/10 rounded-2xl p-3 backdrop-blur-md border border-white/5">
+              <div class="flex items-center gap-1.5 mb-1">
+                <div class="bg-green-400/20 p-1 rounded-full"><span class="material-symbols-rounded text-[10px] text-green-300">arrow_downward</span></div>
+                <span class="text-[9px] font-extrabold uppercase text-slate-300">Masuk</span>
+              </div>
+              <p id="lastIncomeAmt" class="text-sm font-extrabold text-white leading-tight">Rp 0</p>
+            </div>
+            <div class="bg-white/10 rounded-2xl p-3 backdrop-blur-md border border-white/5">
+              <div class="flex items-center gap-1.5 mb-1">
+                <div class="bg-red-400/20 p-1 rounded-full"><span class="material-symbols-rounded text-[10px] text-red-300">arrow_upward</span></div>
+                <span class="text-[9px] font-extrabold uppercase text-slate-300">Keluar</span>
+              </div>
+              <p id="lastExpenseAmt" class="text-sm font-extrabold text-white leading-tight">Rp 0</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-card rounded-[1.5rem] p-4 mt-6">
+        <div class="flex items-center justify-between gap-2 mb-2">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-rounded text-slate-400 text-sm">pie_chart</span>
+            <span class="text-xs font-extrabold uppercase" style="color: rgba(148,163,184,.95)">Proporsi Kas</span>
+          </div>
+          <button id="btnExportFinanceCSV" class="tap focus-ring text-[10px] font-extrabold px-2 py-1 rounded-lg no-print"
+                  style="background: rgba(148,163,184,.12); color: rgba(148,163,184,.95)" onclick="exportTableToCSV('finance')">
+            Export CSV
+          </button>
+        </div>
+        <div class="h-48 relative w-full flex items-center justify-center">
+          <canvas id="financeChart"></canvas>
+        </div>
+      </div>
+
+      <!-- FIXED: Cuaca + Sholat/Imsak + Pemenang Arisan -->
+      <div class="grid grid-cols-1 gap-4 mt-6">
+
+        <!-- CUACA -->
+        <div class="glass-card rounded-[1.5rem] p-5 relative overflow-hidden">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="p-2 rounded-xl" style="background: rgba(59,130,246,.12); color: rgba(59,130,246,.95)">
+                <span class="material-symbols-rounded">cloud</span>
+              </div>
+              <div>
+                <p class="text-xs font-extrabold uppercase tracking-wide" style="color: var(--fg0)">Cuaca Saat Ini</p>
+                <p id="wxCity" class="text-[10px] font-extrabold" style="color: rgba(148,163,184,.95)">Memuat lokasi...</p>
+              </div>
+            </div>
+            <button onclick="refreshWeather()" class="tap focus-ring w-9 h-9 rounded-full flex items-center justify-center"
+                    style="background: rgba(148,163,184,.12); color: rgba(148,163,184,.95)">
+              <span class="material-symbols-rounded text-lg">refresh</span>
+            </button>
+          </div>
+
+          <div class="mt-4 flex items-end justify-between gap-3">
+            <div>
+              <div class="flex items-center gap-2">
+                <p id="wxTemp" class="text-4xl font-black leading-none" style="color: var(--fg0)">--°</p>
+                <span id="wxIcon" class="material-symbols-rounded text-3xl" style="color: rgba(59,130,246,.95)">cloud</span>
+              </div>
+              <p id="wxDesc" class="text-xs font-extrabold mt-1" style="color: rgba(148,163,184,.95)">--</p>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2">
+              <div class="glass-inset rounded-xl p-3 text-center">
+                <p class="text-[10px] font-extrabold" style="color: rgba(148,163,184,.95)">Hum</p>
+                <p id="wxHum" class="text-xs font-extrabold" style="color: var(--fg0)">--%</p>
+              </div>
+              <div class="glass-inset rounded-xl p-3 text-center">
+                <p class="text-[10px] font-extrabold" style="color: rgba(148,163,184,.95)">Angin</p>
+                <p id="wxWind" class="text-xs font-extrabold" style="color: var(--fg0)">--</p>
+              </div>
+              <div class="glass-inset rounded-xl p-3 text-center">
+                <p class="text-[10px] font-extrabold" style="color: rgba(148,163,184,.95)">Update</p>
+                <p id="wxTime" class="text-xs font-extrabold" style="color: var(--fg0)">--</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SHOLAT + IMSAK -->
+        <div class="glass-card rounded-[1.5rem] p-5 relative overflow-hidden">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="p-2 rounded-xl" style="background: rgba(34,197,94,.12); color: rgb(34,197,94)">
+                <span class="material-symbols-rounded">mosque</span>
+              </div>
+              <div>
+                <p class="text-xs font-extrabold uppercase tracking-wide" style="color: var(--fg0)">Jadwal Sholat & Imsak</p>
+                <p id="prCity" class="text-[10px] font-extrabold" style="color: rgba(148,163,184,.95)">Semarang (default)</p>
+              </div>
+            </div>
+            <button onclick="refreshPrayerTimes()" class="tap focus-ring w-9 h-9 rounded-full flex items-center justify-center"
+                    style="background: rgba(148,163,184,.12); color: rgba(148,163,184,.95)">
+              <span class="material-symbols-rounded text-lg">refresh</span>
+            </button>
+          </div>
+
+          <div class="mt-4 grid grid-cols-3 gap-2">
+            <div class="glass-inset rounded-xl p-3">
+              <p class="text-[10px] font-extrabold" style="color: rgba(148,163,184,.95)">Imsak</p>
+              <p id="prImsak" class="text-sm font-extrabold" style="color: var(--fg0)">--:--</p>
+            </div>
+            <div class="glass-inset rounded-xl p-3">
+              <p class="text-[10px] font-extrabold" style="color: rgba(148,163,184,.95)">Subuh</p>
+              <p id="prFajr" class="text-sm font-extrabold" style="color: var(--fg0)">--:--</p>
+            </div>
+            <div class="glass-inset rounded-xl p-3">
+              <p class="text-[10px] font-extrabold" style="color: rgba(148,163,184,.95)">Maghrib</p>
+              <p id="prMaghrib" class="text-sm font-extrabold" style="color: var(--fg0)">--:--</p>
+            </div>
+
+            <div class="glass-inset rounded-xl p-3">
+              <p class="text-[10px] font-extrabold" style="color: rgba(148,163,184,.95)">Dzuhur</p>
+              <p id="prDhuhr" class="text-sm font-extrabold" style="color: var(--fg0)">--:--</p>
+            </div>
+            <div class="glass-inset rounded-xl p-3">
+              <p class="text-[10px] font-extrabold" style="color: rgba(148,163,184,.95)">Ashar</p>
+              <p id="prAsr" class="text-sm font-extrabold" style="color: var(--fg0)">--:--</p>
+            </div>
+            <div class="glass-inset rounded-xl p-3">
+              <p class="text-[10px] font-extrabold" style="color: rgba(148,163,184,.95)">Isya</p>
+              <p id="prIsha" class="text-sm font-extrabold" style="color: var(--fg0)">--:--</p>
+            </div>
+          </div>
+
+          <div class="mt-4 flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-rounded" style="color: rgba(249,115,22,.95)">timer</span>
+              <p class="text-xs font-extrabold" style="color: var(--fg0)">
+                Next: <span id="prNextName">-</span> (<span id="prNextCountdown">--:--</span>)
+              </p>
+            </div>
+            <button onclick="openPrayerDetail()" class="tap focus-ring text-[10px] font-extrabold px-3 py-2 rounded-xl"
+                    style="background: rgba(249,115,22,.14); color: #F97316">
+              DETAIL
+            </button>
+          </div>
+        </div>
+
+        <!-- ARISAN -->
+        <div class="glass-card rounded-[1.5rem] p-5 relative overflow-hidden">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="p-2 rounded-xl" style="background: rgba(249,115,22,.14); color: #F97316">
+                <span class="material-symbols-rounded">workspace_premium</span>
+              </div>
+              <div>
+                <p class="text-xs font-extrabold uppercase tracking-wide" style="color: var(--fg0)">Pemenang Arisan</p>
+                <p id="arMonth" class="text-[10px] font-extrabold" style="color: rgba(148,163,184,.95)">Memuat...</p>
+              </div>
+            </div>
+            <button onclick="openArisanHistory()" class="tap focus-ring text-[10px] font-extrabold px-3 py-2 rounded-xl"
+                    style="background: rgba(148,163,184,.12); color: rgba(148,163,184,.95)">
+              Riwayat
+            </button>
+          </div>
+
+          <div class="mt-4 flex items-center justify-between gap-3">
+            <div class="min-w-0">
+              <p id="arWinner" class="text-lg font-extrabold truncate" style="color: var(--fg0)">-</p>
+              <p id="arPrize" class="text-xs font-extrabold mt-1" style="color: rgba(148,163,184,.95)">Hadiah: -</p>
+            </div>
+            <div class="text-right">
+              <p class="text-[10px] font-extrabold" style="color: rgba(148,163,184,.95)">Tanggal Undi</p>
+              <p id="arDate" class="text-xs font-extrabold" style="color: var(--fg0)">-</p>
+            </div>
+          </div>
+
+          <div class="mt-4">
+            <button id="btnDrawArisan" onclick="drawArisanWinner()" class="tap focus-ring w-full py-3 rounded-2xl font-extrabold text-sm hidden"
+                    style="background: linear-gradient(135deg, #0F172A, #111c33); color: white;">
+              UNDI PEMENANG (ADMIN)
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Agenda / Info (view-only cards, tap to open) -->
+      <div class="grid grid-cols-1 gap-4 mt-6">
+        <div class="glass-card rounded-[1.5rem] p-5 relative overflow-hidden tap cursor-pointer" onclick="switchView('events')">
+          <div class="flex justify-between items-start mb-2">
+            <div class="bg-blue-50/60 p-2 rounded-xl text-blue-600"><span class="material-symbols-rounded">event</span></div>
+            <span class="text-[10px] font-extrabold px-2 py-1 rounded-md" style="background: rgba(148,163,184,.12); color: rgba(148,163,184,.95)">AGENDA</span>
+          </div>
+          <h3 id="widgetEvent" class="text-sm font-extrabold line-clamp-2 leading-relaxed">Belum ada acara mendatang</h3>
+        </div>
+
+        <div class="glass-card rounded-[1.5rem] p-5 relative overflow-hidden tap cursor-pointer" onclick="switchView('alerts')">
+          <div class="flex justify-between items-start mb-2">
+            <div class="bg-orange-50/60 p-2 rounded-xl text-accent"><span class="material-symbols-rounded">notifications_active</span></div>
+            <span class="text-[10px] font-extrabold px-2 py-1 rounded-md" style="background: rgba(148,163,184,.12); color: rgba(148,163,184,.95)">INFO</span>
+          </div>
+          <h3 id="widgetAlert" class="text-sm font-extrabold line-clamp-2 leading-relaxed">Tidak ada pengumuman</h3>
+        </div>
+      </div>
+    </section>
+
+    <!-- GRUP (Daftar Anggota: view-only default) -->
+    <section id="view-groups" class="view-section">
+      <div class="flex justify-between items-end mb-4 px-1">
+        <div>
+          <h2 class="text-2xl font-extrabold" style="color: var(--fg0)">Grup</h2>
+          <p class="text-xs" style="color: var(--fg1)">Daftar anggota & koneksi internal</p>
+        </div>
+        <div class="flex gap-2 items-center">
+          <button id="btnToggleManage" onclick="toggleManageMembers()" class="tap focus-ring text-xs px-3 py-2 rounded-xl font-extrabold hidden"
+                  style="background: rgba(249,115,22,.14); color: #F97316">
+            MODE KELOLA
+          </button>
+          <span id="memberCountBadge" class="text-white text-xs px-3 py-2 rounded-xl font-extrabold flex items-center"
+                style="background: linear-gradient(135deg, #0F172A, #111c33)">0</span>
+        </div>
+      </div>
+
+      <div class="mb-4 relative">
+        <span class="material-symbols-rounded absolute left-3 top-2.5 text-slate-400 text-lg">search</span>
+        <input type="text" id="searchMember" onkeyup="filterList('memberList', this.value)" placeholder="Cari nama anggota..."
+               class="focus-ring w-full pl-10 pr-4 py-2 rounded-xl text-sm font-bold outline-none"
+               style="background: rgba(148,163,184,.10); border: 1px solid rgba(148,163,184,.18); color: var(--fg0)">
+      </div>
+
+      <div id="memberList" class="space-y-3 pb-20"></div>
+    </section>
+
+    <!-- KAS -->
+    <section id="view-finance" class="view-section">
+      <div class="flex justify-between items-center mb-4 px-1 sticky top-0 py-2 z-10" style="background: transparent;">
+        <div>
+          <h2 class="text-2xl font-extrabold" style="color: var(--fg0)">Laporan Kas</h2>
+          <p class="text-xs" style="color: var(--fg1)">Keluar masuk dana</p>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="printFinance()" class="tap focus-ring w-10 h-10 rounded-full flex items-center justify-center"
+                  style="background: rgba(148,163,184,.12); color: rgba(148,163,184,.95)">
+            <span class="material-symbols-rounded">print</span>
+          </button>
+          <button id="btnAddFinance" onclick="openFinanceModal()" class="tap focus-ring w-10 h-10 text-white rounded-full flex items-center justify-center shadow-lg hidden"
+                  style="background: linear-gradient(135deg, #0F172A, #111c33)">
+            <span class="material-symbols-rounded">add</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="mb-4 relative">
+        <span class="material-symbols-rounded absolute left-3 top-2.5 text-slate-400 text-lg">search</span>
+        <input type="text" id="searchFin" onkeyup="filterList('finList', this.value)" placeholder="Cari transaksi..."
+               class="focus-ring w-full pl-10 pr-4 py-2 rounded-xl text-sm font-bold outline-none"
+               style="background: rgba(148,163,184,.10); border: 1px solid rgba(148,163,184,.18); color: var(--fg0)">
+      </div>
+
+      <div id="printArea" class="bg-transparent">
+        <div class="hidden mb-4 border-b border-black pb-4 text-center">
+          <h1 class="text-2xl font-bold uppercase">Laporan Kas KARTEJI</h1>
+          <p class="text-sm">Dicetak pada: <span id="printDate"></span></p>
+        </div>
+        <div id="finList" class="space-y-3 pb-20"></div>
+      </div>
+    </section>
+
+    <!-- ACARA -->
+    <section id="view-events" class="view-section">
+      <div class="flex justify-between items-center mb-6 px-1 sticky top-0 py-2 z-10" style="background: transparent;">
+        <div>
+          <h2 class="text-2xl font-extrabold" style="color: var(--fg0)">Kegiatan</h2>
+          <p class="text-xs" style="color: var(--fg1)">Jadwal acara</p>
+        </div>
+        <button id="btnAddEvent" onclick="openActivityModal()" class="tap focus-ring w-10 h-10 text-white rounded-full flex items-center justify-center shadow-lg hidden"
+                style="background: linear-gradient(135deg, #2563eb, #1d4ed8)">
+          <span class="material-symbols-rounded">add</span>
+        </button>
+      </div>
+      <div id="actList" class="grid grid-cols-1 gap-4 pb-20"></div>
+    </section>
+
+    <!-- INFO -->
+    <section id="view-alerts" class="view-section">
+      <div class="flex justify-between items-center mb-6 px-1 sticky top-0 py-2 z-10" style="background: transparent;">
+        <div>
+          <h2 class="text-2xl font-extrabold" style="color: var(--fg0)">Pengumuman</h2>
+          <p class="text-xs" style="color: var(--fg1)">Broadcast info</p>
+        </div>
+        <button id="btnAddAlert" onclick="openAlertModal()" class="tap focus-ring w-10 h-10 text-white rounded-full flex items-center justify-center shadow-lg hidden"
+                style="background: linear-gradient(135deg, #ef4444, #dc2626)">
+          <span class="material-symbols-rounded">add</span>
+        </button>
+      </div>
+      <div id="nList" class="space-y-3 pb-20"></div>
+    </section>
+
+    <!-- PROFIL (FIXED personal) -->
+    <section id="view-profile" class="view-section">
+      <div class="flex flex-col items-center pt-4 pb-20">
+        <div class="relative group cursor-pointer tap" onclick="$('profileUpload').click()">
+          <img id="profileImage" src="https://via.placeholder.com/150" class="w-28 h-28 rounded-full object-cover border-4 border-white shadow-xl shadow-slate-200" alt="Foto">
+          <div class="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+            <span class="material-symbols-rounded text-white">photo_camera</span>
+          </div>
+          <div class="absolute bottom-1 right-1 bg-accent p-1.5 rounded-full border-2 border-white shadow-sm">
+            <span class="material-symbols-rounded text-white text-sm block">edit</span>
+          </div>
+        </div>
+        <input type="file" id="profileUpload" class="hidden" accept="image/*" onchange="previewProfileImage(this)">
+
+        <h2 id="profileNameDisplay" class="text-xl font-extrabold mt-4 mb-0.5" style="color: var(--fg0)">Nama User</h2>
+        <div id="profileRoleBadge" class="px-3 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide mb-1"
+             style="background: rgba(59,130,246,.12); color: rgba(59,130,246,.95)">-</div>
+        <p id="profileEmailDisplay" class="text-sm" style="color: var(--fg1)">email@user.com</p>
+
+        <button onclick="showIdCard()" class="tap focus-ring mt-3 text-[10px] font-extrabold px-3 py-1.5 rounded-lg flex items-center gap-1"
+                style="background: rgba(15,23,42,.88); color: white">
+          <span class="material-symbols-rounded text-xs">badge</span> LIHAT KARTU ANGGOTA
+        </button>
+
+        <div class="w-full mt-8 space-y-4 px-1">
+          <div class="glass-card p-5 rounded-3xl space-y-4">
+            <div>
+              <label class="text-[10px] font-extrabold ml-1 uppercase flex items-center gap-1" style="color: rgba(148,163,184,.95)">
+                <span class="material-symbols-rounded text-sm">badge</span> Nama Lengkap
+              </label>
+              <input id="editName" type="text" class="focus-ring w-full p-3 rounded-xl text-sm font-extrabold mt-1 outline-none"
+                     style="background: rgba(148,163,184,.10); border: 1px solid rgba(148,163,184,.18); color: var(--fg0)">
+            </div>
+            <div>
+              <label class="text-[10px] font-extrabold ml-1 uppercase flex items-center gap-1" style="color: rgba(148,163,184,.95)">
+                <span class="material-symbols-rounded text-sm">call</span> No. WhatsApp / HP
+              </label>
+              <input id="editPhone" type="tel" placeholder="08..." class="focus-ring w-full p-3 rounded-xl text-sm font-extrabold mt-1 outline-none"
+                     style="background: rgba(148,163,184,.10); border: 1px solid rgba(148,163,184,.18); color: var(--fg0)">
+            </div>
+            <div>
+              <label class="text-[10px] font-extrabold ml-1 uppercase flex items-center gap-1" style="color: rgba(148,163,184,.95)">
+                <span class="material-symbols-rounded text-sm">home_pin</span> Alamat Domisili
+              </label>
+              <textarea id="editAddress" rows="2" placeholder="Masukkan alamat lengkap..."
+                        class="focus-ring w-full p-3 rounded-xl text-sm font-medium mt-1 outline-none resize-none"
+                        style="background: rgba(148,163,184,.10); border: 1px solid rgba(148,163,184,.18); color: var(--fg0)"></textarea>
+            </div>
+            <div>
+              <label class="text-[10px] font-extrabold ml-1 uppercase flex items-center gap-1" style="color: rgba(148,163,184,.95)">
+                <span class="material-symbols-rounded text-sm">sticky_note_2</span> Bio / Catatan
+              </label>
+              <textarea id="editBio" rows="2" placeholder="Tulis sesuatu tentang anda..."
+                        class="focus-ring w-full p-3 rounded-xl text-sm font-medium mt-1 outline-none resize-none"
+                        style="background: rgba(148,163,184,.10); border: 1px solid rgba(148,163,184,.18); color: var(--fg0)"></textarea>
+            </div>
+          </div>
+
+          <button onclick="saveProfile(event)" class="tap focus-ring w-full py-4 rounded-2xl font-extrabold shadow-lg overflow-hidden relative group"
+                  style="background: linear-gradient(135deg, #0F172A, #111c33); color: white;">
+            SIMPAN PROFIL
+            <span class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity">
+              <span class="absolute -left-1/2 top-0 h-full w-1/2 bg-white/15 skew-x-[-18deg] animate-sheen"></span>
+            </span>
+          </button>
+
+          <button id="logoutBtn" class="tap focus-ring w-full py-4 rounded-2xl font-extrabold flex items-center justify-center gap-2"
+                  style="background: rgba(239,68,68,.12); color: rgb(239,68,68)">
+            <span class="material-symbols-rounded">logout</span> KELUAR
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ADMIN (tidak di bottom nav; dibuka via Action Center) -->
+    <section id="view-users" class="view-section">
+      <div class="flex justify-between items-end mb-4 px-1">
+        <div>
+          <h2 class="text-2xl font-extrabold" style="color: var(--fg0)">Admin User</h2>
+          <p class="text-xs" style="color: var(--fg1)">Kelola peran user (khusus Super Admin)</p>
+        </div>
+        <div class="flex gap-2 items-center">
+          <button onclick="exportTableToCSV('users')" class="tap focus-ring text-xs px-2 py-1 rounded-md font-extrabold flex items-center gap-1"
+                  style="background: rgba(34,197,94,.12); color: rgb(34,197,94)">
+            <span class="material-symbols-rounded text-sm">download</span> CSV
+          </button>
+          <span id="userCountBadge" class="text-white text-xs px-3 py-1 rounded-full font-extrabold flex items-center"
+                style="background: linear-gradient(135deg, #0F172A, #111c33)">0</span>
+        </div>
+      </div>
+      <div class="mb-4 relative">
+        <span class="material-symbols-rounded absolute left-3 top-2.5 text-slate-400 text-lg">search</span>
+        <input type="text" id="searchUser" onkeyup="filterList('userList', this.value)" placeholder="Cari nama anggota..."
+               class="focus-ring w-full pl-10 pr-4 py-2 rounded-xl text-sm font-bold outline-none"
+               style="background: rgba(148,163,184,.10); border: 1px solid rgba(148,163,184,.18); color: var(--fg0)">
+      </div>
+      <div id="userList" class="space-y-3 pb-20"></div>
+    </section>
+
+    <!-- INVENTARIS (akses via Global Search / nanti bisa ditambah menu internal) -->
+    <section id="view-inventory" class="view-section">
+      <div class="flex justify-between items-center mb-6 px-1 sticky top-0 py-2 z-10" style="background: transparent;">
+        <div>
+          <h2 class="text-2xl font-extrabold" style="color: var(--fg0)">Inventaris</h2>
+          <p class="text-xs" style="color: var(--fg1)">Aset & Barang</p>
+        </div>
+        <button id="btnAddInv" onclick="openInventoryModal()" class="tap focus-ring w-10 h-10 text-white rounded-full flex items-center justify-center shadow-lg hidden"
+                style="background: linear-gradient(135deg, #7c3aed, #5b21b6)">
+          <span class="material-symbols-rounded">add</span>
+        </button>
+      </div>
+      <div id="invList" class="grid grid-cols-2 gap-3 pb-20"></div>
+    </section>
+
+  </main>
+
+  <!-- Bottom Nav FIXED: Home, Acara, Profil, Kas, Grup -->
+  <nav class="fixed bottom-0 w-full glass-nav pb-6 pt-2 px-4 z-50 rounded-t-[2rem] no-print">
+    <div class="flex justify-between items-center max-w-sm mx-auto">
+      <button onclick="switchView('home')" class="nav-btn active flex flex-col items-center gap-1 p-2 w-14 transition-all" data-target="home">
+        <span class="material-symbols-rounded text-2xl" style="color: rgba(148,163,184,.95)">home</span>
+        <p class="text-[10px] font-medium" style="color: rgba(148,163,184,.95)">Home</p>
+      </button>
+
+      <button onclick="switchView('events')" class="nav-btn flex flex-col items-center gap-1 p-2 w-14 transition-all" data-target="events">
+        <span class="material-symbols-rounded text-2xl" style="color: rgba(148,163,184,.95)">event</span>
+        <p class="text-[10px] font-medium" style="color: rgba(148,163,184,.95)">Acara</p>
+      </button>
+
+      <div class="relative -top-6">
+        <button onclick="switchView('profile')" class="nav-btn w-14 h-14 text-white rounded-full flex items-center justify-center shadow-xl hover:scale-105 active:scale-95 transition-all ring-4 ring-white"
+                style="background: linear-gradient(135deg, #0F172A, #111c33)" data-target="profile">
+          <span class="material-symbols-rounded text-3xl">person</span>
+        </button>
+      </div>
+
+      <button onclick="switchView('finance')" class="nav-btn flex flex-col items-center gap-1 p-2 w-14 transition-all" data-target="finance">
+        <span class="material-symbols-rounded text-2xl" style="color: rgba(148,163,184,.95)">account_balance_wallet</span>
+        <p class="text-[10px] font-medium" style="color: rgba(148,163,184,.95)">Kas</p>
+      </button>
+
+      <button onclick="switchView('groups')" class="nav-btn flex flex-col items-center gap-1 p-2 w-14 transition-all" data-target="groups">
+        <span class="material-symbols-rounded text-2xl" style="color: rgba(148,163,184,.95)">group</span>
+        <p class="text-[10px] font-medium" style="color: rgba(148,163,184,.95)">Grup</p>
+      </button>
+    </div>
+  </nav>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+    import { getFirestore, doc, getDoc, updateDoc, deleteDoc, collection, addDoc, getDocs, query, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+    // ===== FIREBASE CONFIG =====
+    const firebaseConfig = {
+      apiKey: "AIzaSyAQxpD7ea9gHWGiU3wYXr0XHyl-SNyFYNs",
+      authDomain: "katar-9cac3.firebaseapp.com",
+      projectId: "katar-9cac3",
+      storageBucket: "katar-9cac3.firebasestorage.app",
+      messagingSenderId: "1017734829960",
+      appId: "1:1017734829960:web:6b02b7176f08a23ce28c3d"
+    };
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // ===== CLOUDINARY =====
+    const CLOUD_NAME = "dbxktcwug";
+    const UPLOAD_PRESET = "Karteji";
+
+    // ===== GLOBALS =====
+    window.$ = (id) => document.getElementById(id);
+    let ME_UID = null;
+    let ME_ROLE = "anggota";
+    let newProfileFile = null;
+    let financeChartInstance = null;
+    let MANAGE_MODE = false;
+
+    // ===== XSS SAFE =====
+    function clean(text) {
+      if (!text) return "";
+      return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    // ===== THEME =====
+    const btnTheme = document.getElementById("btn-theme");
+    const themeIcon = document.getElementById("themeIcon");
+    function getTheme(){ return document.documentElement.getAttribute('data-theme') || 'light'; }
+    function setTheme(next){
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('kte_theme', next);
+      const meta = document.querySelector('meta[name="theme-color"]');
+      if(meta) meta.setAttribute('content', next === 'dark' ? '#0B1120' : '#F8FAFC');
+      if(themeIcon) themeIcon.textContent = (next === 'dark') ? 'light_mode' : 'dark_mode';
+    }
+    function toggleTheme(){ setTheme(getTheme() === 'dark' ? 'light' : 'dark'); }
+    setTheme(getTheme());
+    btnTheme?.addEventListener("click", toggleTheme);
+
+    // Header shrink
+    const appHeader = document.getElementById("appHeader");
+    window.addEventListener("scroll", () => {
+      const shrink = window.scrollY > 14;
+      if(appHeader) appHeader.setAttribute("data-shrink", shrink ? "true" : "false");
+    }, { passive: true });
+
+    // Clock
+    function tickClock(){
+      const d = new Date();
+      const hh = String(d.getHours()).padStart(2,'0');
+      const mm = String(d.getMinutes()).padStart(2,'0');
+      const el = $("clockChip");
+      if(el) el.textContent = `${hh}:${mm}`;
+    }
+    setInterval(tickClock, 1000 * 20);
+    tickClock();
+
+    // ===== TOAST =====
+    window.showToast = (msg, type = 'success') => {
+      const container = $('toastContainer');
+      const el = document.createElement('div');
+      const isErr = type === 'error';
+      el.className = `pointer-events-auto min-w-[200px] px-4 py-3 rounded-xl shadow-xl flex items-center gap-3 animate-slide-in-top`;
+      el.style.background = isErr ? 'rgba(239,68,68,.92)' : 'rgba(15,23,42,.88)';
+      el.style.color = 'white';
+      el.innerHTML = `
+        <span class="material-symbols-rounded text-lg">${isErr ? 'error' : 'check_circle'}</span>
+        <span class="text-xs font-extrabold">${clean(msg)}</span>
+      `;
+      container.appendChild(el);
+      setTimeout(() => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(-20px)';
+        el.style.transition = 'all 0.3s';
+        setTimeout(() => el.remove(), 300);
+      }, 2800);
+    };
+
+    // ===== LOADER =====
+    window.toggleLoader = (show) => {
+      const l = $("globalLoader");
+      if(!l) return;
+      if(show) { l.classList.remove('hidden'); l.classList.add('flex'); }
+      else { l.classList.add('hidden'); l.classList.remove('flex'); }
+    };
+
+    // ===== MODAL =====
+    window.closeModal = () => $("crudModal").classList.add('hidden');
+    window.showModal = (title, bodyHtml, onSave) => {
+      $("modalTitle").textContent = title;
+      $("modalBody").innerHTML = bodyHtml;
+      $("crudModal").classList.remove('hidden');
+      $("crudModal").classList.add('flex');
+
+      const btn = $("modalSubmitBtn");
+      const newBtn = btn.cloneNode(true);
+      btn.parentNode.replaceChild(newBtn, btn);
+      newBtn.onclick = onSave;
+
+      if (!onSave) newBtn.style.display = 'none';
+      else newBtn.style.display = 'block';
+    };
+
+    // ===== PRINT =====
+    window.printFinance = () => {
+      $("printDate").innerText = new Date().toLocaleString('id-ID');
+      window.print();
+    }
+
+    // ===== AUDIT (safe) =====
+    async function writeAudit(action, payload = {}){
+      try{
+        if(!ME_UID) return;
+        await addDoc(collection(db, "audit_logs"), {
+          actorUid: ME_UID,
+          action,
+          payload,
+          createdAt: serverTimestamp()
+        });
+      }catch(e){ console.warn("Audit log gagal (ignored):", e); }
+    }
+
+    // ===== ROLE PERMISSIONS =====
+    const PERM = {
+      super_admin: { manageUsers:true, financeWrite:true, eventsWrite:true, alertsWrite:true, invWrite:true, arisanDraw:true },
+      ketua:       { manageUsers:false, financeWrite:true, eventsWrite:true, alertsWrite:true, invWrite:false, arisanDraw:true },
+      wakil_ketua: { manageUsers:false, financeWrite:true, eventsWrite:true, alertsWrite:true, invWrite:false, arisanDraw:false },
+      bendahara:   { manageUsers:false, financeWrite:true, eventsWrite:false, alertsWrite:false, invWrite:false, arisanDraw:false },
+      sekretaris:  { manageUsers:false, financeWrite:false, eventsWrite:true, alertsWrite:true, invWrite:false, arisanDraw:false },
+      koordinator: { manageUsers:false, financeWrite:false, eventsWrite:true, alertsWrite:false, invWrite:true, arisanDraw:false },
+      anggota:     { manageUsers:false, financeWrite:false, eventsWrite:false, alertsWrite:false, invWrite:false, arisanDraw:false },
+    };
+
+    function can(key){
+      const p = PERM[ME_ROLE] || PERM.anggota;
+      return !!p[key];
+    }
+
+    function setHidden(id, hidden){
+      const el = document.getElementById(id);
+      if(!el) return;
+      el.classList.toggle("hidden", !!hidden);
+    }
+
+    function applyRoleGates(){
+      setHidden("btnAddFinance", !can("financeWrite"));
+      setHidden("btnAddEvent", !can("eventsWrite"));
+      setHidden("btnAddAlert", !can("alertsWrite"));
+      setHidden("btnAddInv", !can("invWrite"));
+      setHidden("btnDrawArisan", !can("arisanDraw"));
+      setHidden("btnToggleManage", !can("manageUsers"));
+
+      // Action Center always visible, but content differs (see openActionCenter)
+    }
+
+    // ===== VIEW SWITCH =====
+    window.switchView = (viewId) => {
+      document.querySelectorAll('.view-section').forEach(el => {
+        el.classList.remove('active');
+        setTimeout(() => { if(!el.classList.contains('active')) el.style.display = 'none'; }, 200);
+      });
+
+      setTimeout(() => {
+        const target = $(`view-${viewId}`);
+        if(!target) return;
+        target.style.display = 'block';
+        setTimeout(() => target.classList.add('active'), 20);
+      }, 200);
+
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = document.querySelector(`.nav-btn[data-target="${viewId}"]`);
+      if(activeBtn) activeBtn.classList.add('active');
+
+      // loaders
+      if(viewId === 'groups') loadMembers();
+      if(viewId === 'finance') loadFinance();
+      if(viewId === 'events') loadActivities();
+      if(viewId === 'alerts') loadNotifications();
+      if(viewId === 'profile') loadProfileData();
+      if(viewId === 'inventory') loadInventory();
+    };
+
+    // ===== ACTION CENTER =====
+    window.openActionCenter = () => {
+      const adminBtn = can("manageUsers")
+        ? `<button class="tap focus-ring w-full py-3 rounded-xl text-xs font-extrabold"
+              style="background: rgba(249,115,22,.14); color: #F97316" onclick="switchView('users'); closeModal(); loadUsers();">
+              Kelola User & Role
+           </button>`
+        : ``;
+
+      const invBtn = can("invWrite")
+        ? `<button class="tap focus-ring w-full py-3 rounded-xl text-xs font-extrabold"
+              style="background: rgba(124,58,237,.12); color: rgba(124,58,237,.95)" onclick="switchView('inventory'); closeModal(); loadInventory();">
+              Buka Inventaris
+           </button>`
+        : `<button class="tap focus-ring w-full py-3 rounded-xl text-xs font-extrabold"
+              style="background: rgba(148,163,184,.10); color: rgba(148,163,184,.95)" onclick="switchView('inventory'); closeModal(); loadInventory();">
+              Lihat Inventaris
+           </button>`;
+
+      const html = `
+        <div class="space-y-3">
+          <button class="tap focus-ring w-full py-3 rounded-xl text-xs font-extrabold" style="background: rgba(15,23,42,.88); color: white" onclick="location.reload()">Refresh Semua Data</button>
+          <button class="tap focus-ring w-full py-3 rounded-xl text-xs font-extrabold" style="background: rgba(59,130,246,.12); color: rgba(59,130,246,.95)" onclick="refreshWeather()">Refresh Cuaca</button>
+          <button class="tap focus-ring w-full py-3 rounded-xl text-xs font-extrabold" style="background: rgba(34,197,94,.12); color: rgb(34,197,94)" onclick="refreshPrayerTimes()">Refresh Jadwal Sholat</button>
+          <button class="tap focus-ring w-full py-3 rounded-xl text-xs font-extrabold" style="background: rgba(148,163,184,.12); color: rgba(148,163,184,.95)" onclick="printFinance()">Print Kas</button>
+          <button class="tap focus-ring w-full py-3 rounded-xl text-xs font-extrabold" style="background: rgba(15,23,42,.10); color: var(--fg0)" onclick="exportTableToCSV('finance')">Export Kas (CSV)</button>
+          ${invBtn}
+          ${adminBtn}
+        </div>
+      `;
+      showModal("Action Center", html, null);
+    };
+
+    // ===== GLOBAL SEARCH =====
+    window.openGlobalSearch = () => {
+      const html = `
+        <div class="space-y-3">
+          <div class="relative">
+            <span class="material-symbols-rounded absolute left-3 top-3 text-slate-400">search</span>
+            <input id="gq" class="focus-ring w-full pl-10 pr-3 py-3 rounded-xl text-sm font-extrabold outline-none"
+              style="background: rgba(148,163,184,.10); border: 1px solid rgba(148,163,184,.18); color: var(--fg0)"
+              placeholder="Cari: anggota / transaksi / acara / info / inventaris...">
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <button class="tap focus-ring py-3 rounded-xl text-xs font-extrabold"
+              style="background: rgba(15,23,42,.10); color: var(--fg0)" onclick="runGlobalSearch('members')">Cari Anggota</button>
+            <button class="tap focus-ring py-3 rounded-xl text-xs font-extrabold"
+              style="background: rgba(15,23,42,.10); color: var(--fg0)" onclick="runGlobalSearch('finance')">Cari Kas</button>
+            <button class="tap focus-ring py-3 rounded-xl text-xs font-extrabold"
+              style="background: rgba(37,99,235,.12); color: rgba(37,99,235,.95)" onclick="runGlobalSearch('events')">Cari Acara</button>
+            <button class="tap focus-ring py-3 rounded-xl text-xs font-extrabold"
+              style="background: rgba(239,68,68,.12); color: rgba(239,68,68,.95)" onclick="runGlobalSearch('alerts')">Cari Info</button>
+          </div>
+          <div class="grid grid-cols-1 gap-2">
+            <button class="tap focus-ring py-3 rounded-xl text-xs font-extrabold"
+              style="background: rgba(124,58,237,.12); color: rgba(124,58,237,.95)" onclick="runGlobalSearch('inventory')">Cari Inventaris</button>
+          </div>
+          <div id="gRes" class="mt-2 space-y-2"></div>
+        </div>
+      `;
+      showModal("Pencarian Global", html, null);
+      setTimeout(()=> document.getElementById("gq")?.focus(), 50);
+    };
+
+    window.runGlobalSearch = async (type) => {
+      const q = clean((document.getElementById("gq")?.value || "").trim().toLowerCase());
+      const box = document.getElementById("gRes");
+      if(!box) return;
+      if(!q) { box.innerHTML = `<div class="text-xs font-extrabold" style="color:#ef4444">Isi kata kunci dulu.</div>`; return; }
+
+      toggleLoader(true);
+      try{
+        let col = "";
+        if(type === "members") col = "users";
+        if(type === "finance") col = "financial_records";
+        if(type === "events") col = "activities";
+        if(type === "alerts") col = "notifications";
+        if(type === "inventory") col = "inventory";
+
+        const sortField = (col === "activities") ? "date" : "createdAt";
+        const snap = await getDocs(query(collection(db, col), orderBy(sortField, "desc"), limit(40)));
+        const items = [];
+        snap.forEach(d=>{
+          const x = d.data();
+          const text = JSON.stringify(x).toLowerCase();
+          if(text.includes(q)) items.push({ id: d.id, ...x });
+        });
+
+        if(items.length === 0){
+          box.innerHTML = `<div class="text-xs font-extrabold" style="color: rgba(148,163,184,.95)">Tidak ditemukan.</div>`;
+          return;
+        }
+
+        box.innerHTML = items.slice(0,10).map(x => `
+          <div class="glass-inset rounded-xl p-3">
+            <div class="text-xs font-extrabold" style="color: var(--fg0)">${clean(x.name||x.title||x.note||x.desc||"Item")}</div>
+            <div class="text-[10px] font-extrabold" style="color: rgba(148,163,184,.9)">${type.toUpperCase()}</div>
+          </div>
+        `).join("");
+
+        await writeAudit("global_search", { type, q, found: items.length });
+      }catch(e){
+        console.warn(e);
+        box.innerHTML = `<div class="text-xs font-extrabold" style="color:#ef4444">Gagal mencari.</div>`;
+      }finally{ toggleLoader(false); }
+    };
+
+    // ===== ANIMATE MONEY =====
+    function animateValue(obj, start, end, duration) {
+      if(!obj) return;
+      let startTimestamp = null;
+      const step = (timestamp) => {
+        if (!startTimestamp) startTimestamp = timestamp;
+        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+        obj.innerHTML = "Rp " + Math.floor(progress * (end - start) + start).toLocaleString('id-ID');
+        if (progress < 1) window.requestAnimationFrame(step);
+      };
+      window.requestAnimationFrame(step);
+    }
+
+    // ===== CLOUDINARY UPLOAD =====
+    async function uploadToCloudinary(file) {
+      if(!file) return null;
+      if(!file.type.startsWith('image/')){ showToast("File harus gambar!", "error"); return null; }
+      const form = new FormData();
+      form.append("file", file);
+      form.append("upload_preset", UPLOAD_PRESET);
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: "POST", body: form });
+      const d = await res.json();
+      if(d.error) { showToast("Gagal Upload Gambar", "error"); throw new Error(d.error.message); }
+      return { url: d.secure_url };
+    }
+
+    // ===== AUTH INIT =====
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) return window.location.href = "login.html";
+      ME_UID = user.uid;
+      try {
+        await loadProfileData();       // sets role
+        applyRoleGates();              // gates buttons
+        await loadHomeData();          // home data
+        await loadLatestArisan();      // arisan
+        await initWeather();           // weather
+        await initPrayerTimes();       // prayer
+      } catch(e) { console.error("Init Error:", e); }
+    });
+
+    // ===== PROFILE LOAD =====
+    async function loadProfileData() {
+      try {
+        const snap = await getDoc(doc(db, "users", ME_UID));
+        if(snap.exists()){
+          const d = snap.data();
+          const photoUrl = d.photo?.url || "https://via.placeholder.com/150";
+
+          ME_ROLE = (d.role || "anggota");
+          const roleLabel = ME_ROLE.replaceAll('_',' ').toUpperCase();
+
+          $("headerName").textContent = clean(d.name) || "User";
+          $("headerPhoto").src = photoUrl;
+          $("profileImage").src = photoUrl;
+
+          $("profileNameDisplay").textContent = clean(d.name) || "Tanpa Nama";
+          $("profileEmailDisplay").textContent = clean(d.email || "");
+          $("profileRoleBadge").textContent = roleLabel;
+
+          $("rolePill").textContent = roleLabel;
+          $("editName").value = d.name || "";
+          $("editPhone").value = d.phone || "";
+          $("editAddress").value = d.address || "";
+          $("editBio").value = d.bio || "";
+
+          applyRoleGates();
+        }
+      } catch(e) { console.error("Profile Load Error:", e); }
+    }
+
+    window.previewProfileImage = (input) => {
+      if (input.files && input.files[0]) {
+        newProfileFile = input.files[0];
+        const reader = new FileReader();
+        reader.onload = (e) => $("profileImage").src = e.target.result;
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+
+    window.showIdCard = async () => {
+      toggleLoader(true);
+      try {
+        const snap = await getDoc(doc(db, "users", ME_UID));
+        const u = snap.data() || {};
+        const html = `
+          <div class="p-4 rounded-xl relative overflow-hidden shadow-xl"
+               style="background: linear-gradient(135deg, #0F172A, #000); color: white; border: 1px solid rgba(148,163,184,.25)">
+            <div class="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
+            <div class="flex justify-between items-start">
+              <div class="text-[10px] font-extrabold tracking-widest bg-white/15 px-2 py-0.5 rounded">KARTEJI</div>
+              <div class="text-[10px] font-extrabold tracking-widest bg-white/15 px-2 py-0.5 rounded">KTA</div>
+            </div>
+            <div class="flex gap-4 items-center mt-3">
+              <img src="${u.photo?.url || 'https://via.placeholder.com/150'}" class="w-16 h-16 rounded-xl object-cover bg-slate-700 border border-slate-500">
+              <div>
+                <h3 class="text-lg font-extrabold leading-none">${clean(u.name) || 'Nama Anggota'}</h3>
+                <p class="text-[10px] text-slate-300 mt-1 uppercase">${clean((u.role || 'anggota').replaceAll('_',' '))}</p>
+                <p class="text-[9px] text-slate-400 mt-0.5">${String(ME_UID).substring(0,8).toUpperCase()}</p>
+              </div>
+            </div>
+            <div class="mt-4 pt-3 border-t border-white/10 flex justify-between items-end">
+              <div>
+                <p class="text-[8px] text-slate-300">Bergabung</p>
+                <p class="text-[10px] font-extrabold">2025</p>
+              </div>
+              <div class="w-24 h-6 bg-white rounded-sm opacity-90"></div>
+            </div>
+          </div>
+          <p class="text-center text-xs mt-4" style="color: rgba(148,163,184,.95)">Tunjukkan kartu ini untuk kegiatan.</p>
+        `;
+        showModal("Kartu Anggota Digital", html, null);
+      } finally { toggleLoader(false); }
+    }
+
+    window.saveProfile = async (ev) => {
+      const btn = ev?.currentTarget;
+      const originalText = btn?.innerText || "SIMPAN PROFIL";
+      if(btn){ btn.innerText = "MENYIMPAN..."; btn.disabled = true; }
+      toggleLoader(true);
+      try {
+        let updateData = {
+          name: $("editName").value,
+          phone: $("editPhone").value,
+          address: $("editAddress").value,
+          bio: $("editBio").value
+        };
+        if(newProfileFile) {
+          const uploaded = await uploadToCloudinary(newProfileFile);
+          if(uploaded) updateData.photo = uploaded;
+        }
+        await updateDoc(doc(db, "users", ME_UID), updateData);
+        await writeAudit("profile_update", { fields: Object.keys(updateData) });
+        showToast("Profil berhasil diperbarui!");
+        await loadProfileData();
+        newProfileFile = null;
+      } catch(e) { console.error(e); showToast("Gagal simpan profil", "error"); }
+      finally { toggleLoader(false); if(btn){ btn.innerText = originalText; btn.disabled = false; } }
+    }
+
+    // ===== LOGOUT =====
+    $("logoutBtn").onclick = async () => {
+      await writeAudit("logout", {});
+      await signOut(auth);
+      location.href = "login.html";
+    };
+
+    // ===== HOME DATA =====
+    async function loadHomeData() {
+      try {
+        const finSnapshot = await getDocs(query(collection(db, "financial_records"), orderBy("createdAt", "desc")));
+        let bal = 0, lastInc = 0, lastExp = 0, chartIncome = 0, chartExpense = 0;
+
+        const now = new Date();
+        const y = now.getFullYear(), m = now.getMonth(), d = now.getDate();
+        const startToday = new Date(y,m,d,0,0,0);
+        const endToday = new Date(y,m,d,23,59,59);
+        let todayIn = 0, todayOut = 0;
+
+        finSnapshot.forEach(docu => {
+          const f = docu.data();
+          if(f.status === 'approved') {
+            const amt = Number(f.amount) || 0;
+            if(f.type === 'income') {
+              bal += amt; chartIncome += amt;
+              if(lastInc === 0) lastInc = amt;
+            } else {
+              bal -= amt; chartExpense += amt;
+              if(lastExp === 0) lastExp = amt;
+            }
+            const ts = f.createdAt?.seconds ? new Date(f.createdAt.seconds*1000) : null;
+            if(ts && ts >= startToday && ts <= endToday){
+              if(f.type === 'income') todayIn += amt; else todayOut += amt;
+            }
+          }
+        });
+
+        animateValue($("cardBalance"), 0, bal, 1200);
+        $("lastIncomeAmt").textContent = "Rp " + lastInc.toLocaleString('id-ID');
+        $("lastExpenseAmt").textContent = "Rp " + lastExp.toLocaleString('id-ID');
+        $("todayChip").textContent = `TODAY: ${todayIn.toLocaleString('id-ID')} IN / ${todayOut.toLocaleString('id-ID')} OUT`;
+        renderChart(chartIncome, chartExpense);
+
+        const evSnapshot = await getDocs(query(collection(db, "activities"), orderBy("date", "asc"), limit(1)));
+        if(!evSnapshot.empty) {
+          const e = evSnapshot.docs[0].data();
+          $("widgetEvent").textContent = `${clean(e.title)} (${clean(e.date)})`;
+        } else $("widgetEvent").textContent = "Belum ada acara mendatang";
+
+        const notifSnapshot = await getDocs(query(collection(db, "notifications"), orderBy("createdAt", "desc"), limit(1)));
+        if(!notifSnapshot.empty) $("widgetAlert").textContent = clean(notifSnapshot.docs[0].data().title);
+        else $("widgetAlert").textContent = "Tidak ada pengumuman";
+
+        const uSnapshot = await getDocs(collection(db, "users"));
+        $("userCountBadge").textContent = uSnapshot.size;
+        $("memberCountBadge").textContent = uSnapshot.size;
+
+      } catch (e) { console.error("Home Data Error:", e); }
+    }
+
+    function renderChart(inc, exp) {
+      const ctx = $("financeChart").getContext('2d');
+      if(financeChartInstance) financeChartInstance.destroy();
+      financeChartInstance = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Masuk', 'Keluar'],
+          datasets: [{ data: [inc, exp], backgroundColor: ['#4ade80', '#f87171'], borderWidth: 0, hoverOffset: 10 }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { position: 'right', labels: { boxWidth: 10, font: { family: 'Plus Jakarta Sans', size: 10 } } },
+            tooltip: { callbacks: { label: (c) => ` Rp ${Number(c.raw||0).toLocaleString('id-ID')}` } } },
+          cutout: '75%', layout: { padding: 10 }
+        }
+      });
+    }
+
+    // ===== FILTER LIST =====
+    window.filterList = (listId, queryStr) => {
+      const list = $(listId);
+      if(!list) return;
+      const items = list.children;
+      const term = String(queryStr||"").toLowerCase();
+      for(let item of items) {
+        const text = item.innerText.toLowerCase();
+        item.style.display = text.includes(term) ? "" : "none";
+      }
+    }
+
+    // ===== CSV EXPORT =====
+    window.exportTableToCSV = (type) => {
+      let rows = [];
+      const timestamp = new Date().toISOString().slice(0,10);
+      if(type === 'finance') {
+        rows.push(["Tanggal", "Keterangan", "Tipe", "Jumlah"]);
+        const items = document.querySelectorAll("#finList > div");
+        items.forEach(el => {
+          const note = el.querySelector("p")?.innerText || "";
+          const amt = (el.querySelector("p:last-child")?.innerText || "").replace(/[^0-9]/g, '');
+          const date = el.querySelector(".text-slate-400")?.innerText || "";
+          const typeTx = el.innerHTML.includes("arrow_downward") ? "Masuk" : "Keluar";
+          rows.push([date, note, typeTx, amt]);
+        });
+      } else if (type === 'users') {
+        rows.push(["Nama", "Role"]);
+        const items = document.querySelectorAll("#userList > div");
+        items.forEach(el => {
+          const name = el.querySelector("p")?.innerText || "";
+          const role = el.querySelector("select")?.value || "";
+          rows.push([name, role]);
+        });
+      }
+      let csvContent = "data:text/csv;charset=utf-8,";
+      rows.forEach(e => csvContent += e.join(",") + "\r\n");
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `Laporan_${type}_${timestamp}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      writeAudit("export_csv", { type });
+      showToast("CSV berhasil dibuat.");
+    }
+
+    // ===== MEMBERS (GRUP) =====
+    window.toggleManageMembers = () => {
+      MANAGE_MODE = !MANAGE_MODE;
+      const btn = $("btnToggleManage");
+      if(btn) btn.textContent = MANAGE_MODE ? "MODE LIHAT" : "MODE KELOLA";
+      loadMembers();
+    };
+
+    async function loadMembers(){
+      const list = $("memberList"); if(!list) return;
+      list.innerHTML = "";
+      try{
+        const snap = await getDocs(query(collection(db, "users"), orderBy("name")));
+        $("memberCountBadge").textContent = snap.size;
+
+        const roles = ["anggota","koordinator","sekretaris","bendahara","wakil_ketua","ketua","super_admin"];
+
+        snap.forEach(d=>{
+          const u = d.data() || {};
+          const isMe = (d.id === ME_UID);
+          const roleLabel = (u.role || "anggota").replaceAll("_"," ").toUpperCase();
+
+          const canManageThis = can("manageUsers") && MANAGE_MODE && !isMe;
+          const roleSelect = canManageThis ? `
+            <select onchange="changeRole('${d.id}', this.value)"
+              class="text-xs font-extrabold rounded border-none outline-none cursor-pointer uppercase py-1 mt-1"
+              style="background: rgba(148,163,184,.10); color: #F97316">
+              ${roles.map(r => `<option value="${r}" ${u.role===r ? 'selected' : ''}>${r.replaceAll('_',' ').toUpperCase()}</option>`).join('')}
+            </select>
+          ` : `<div class="text-[10px] font-extrabold mt-1" style="color: rgba(148,163,184,.95)">${clean(roleLabel)}</div>`;
+
+          const delBtn = canManageThis ? `
+            <button onclick="deleteDocData('users','${d.id}')" class="tap w-9 h-9 rounded-full flex items-center justify-center transition-all"
+                    style="background: rgba(239,68,68,.12); color: rgb(239,68,68)">
+              <span class="material-symbols-rounded text-lg">delete</span>
+            </button>
+          ` : ``;
+
+          list.innerHTML += `
+            <div class="glass-card p-4 rounded-2xl flex items-center justify-between">
+              <div class="flex items-center gap-3 overflow-hidden">
+                <img src="${u.photo?.url || 'https://via.placeholder.com/50'}" class="w-10 h-10 rounded-full object-cover" style="background: rgba(148,163,184,.12)">
+                <div class="min-w-0">
+                  <p class="text-sm font-extrabold truncate" style="color: var(--fg0)">${clean(u.name) || 'User'}</p>
+                  ${roleSelect}
+                </div>
+              </div>
+              ${delBtn}
+            </div>
+          `;
+        });
+
+        await writeAudit("members_view", { manageMode: MANAGE_MODE });
+      }catch(e){
+        console.error(e);
+        list.innerHTML = `<div class="text-xs font-extrabold" style="color:#ef4444">Gagal memuat anggota.</div>`;
+      }
+    }
+
+    // ===== USERS ADMIN VIEW (super admin only) =====
+    async function loadUsers() {
+      if(!can("manageUsers")){
+        showToast("Akses ditolak: hanya Super Admin.", "error");
+        return;
+      }
+      const list = $("userList"); if(!list) return;
+      list.innerHTML = "";
+      try {
+        const snap = await getDocs(query(collection(db, "users"), orderBy("name")));
+        const roles = ["anggota", "koordinator", "sekretaris", "bendahara", "wakil_ketua", "ketua", "super_admin"];
+        snap.forEach(d => {
+          const u = d.data() || {};
+          if(d.id === ME_UID) return; // tidak kelola diri sendiri
+          let options = roles.map(r => `<option value="${r}" ${u.role===r ? 'selected' : ''}>${r.replaceAll('_',' ').toUpperCase()}</option>`).join('');
+          list.innerHTML += `
+            <div class="glass-card p-4 rounded-2xl flex items-center justify-between">
+              <div class="flex items-center gap-3 overflow-hidden">
+                <img src="${u.photo?.url || 'https://via.placeholder.com/50'}" class="w-10 h-10 rounded-full object-cover" style="background: rgba(148,163,184,.12)">
+                <div class="min-w-0">
+                  <p class="text-sm font-extrabold truncate" style="color: var(--fg0)">${clean(u.name) || 'User'}</p>
+                  <select onchange="changeRole('${d.id}', this.value)"
+                          class="text-xs font-extrabold rounded border-none outline-none cursor-pointer uppercase py-1 mt-1"
+                          style="background: rgba(148,163,184,.10); color: #F97316">
+                    ${options}
+                  </select>
+                </div>
+              </div>
+              <button onclick="deleteDocData('users','${d.id}')" class="tap w-9 h-9 rounded-full flex items-center justify-center transition-all"
+                      style="background: rgba(239,68,68,.12); color: rgb(239,68,68)">
+                <span class="material-symbols-rounded text-lg">delete</span>
+              </button>
+            </div>
+          `;
+        });
+      } catch(e) { console.error(e); }
+    }
+
+    window.changeRole = async (uid, val) => {
+      if(!can("manageUsers")) { showToast("Akses ditolak.", "error"); return; }
+      if (!uid) { showToast("Error: ID User tidak ditemukan", "error"); return; }
+      toggleLoader(true);
+      try {
+        const userRef = doc(db, "users", uid);
+        await updateDoc(userRef, { role: val });
+        await writeAudit("role_change", { uid, role: val });
+        showToast("Role berhasil diupdate!");
+        if(MANAGE_MODE) loadMembers();
+      } catch(e) {
+        console.error("GAGAL GANTI ROLE:", e);
+        showToast("Gagal update role (cek Rules).", "error");
+      } finally { toggleLoader(false); }
+    }
+
+    // ===== FINANCE =====
+    async function loadFinance() {
+      const list = $("finList"); if(!list) return;
+      list.innerHTML = "";
+      try {
+        const snap = await getDocs(query(collection(db, "financial_records"), orderBy("createdAt", "desc")));
+        if(snap.empty) { list.innerHTML = '<p class="text-center text-sm mt-10" style="color: rgba(148,163,184,.95)">Belum ada data kas.</p>'; return; }
+
+        snap.forEach(d => {
+          const f = d.data() || {};
+          const isInc = f.type === 'income';
+          const dt = f.createdAt?.seconds ? new Date(f.createdAt.seconds*1000).toLocaleDateString('id-ID') : '-';
+          const delBtn = can("financeWrite") ? `
+            <button onclick="deleteDocData('financial_records','${d.id}')" class="text-[10px] font-extrabold px-2 py-0.5 rounded-md active:scale-95 transition-transform no-print"
+                    style="background: rgba(239,68,68,.12); color: rgb(239,68,68)">Hapus</button>
+          ` : ``;
+
+          list.innerHTML += `
+            <div class="glass-card p-4 rounded-2xl flex justify-between items-start transition-all break-inside-avoid">
+              <div class="flex items-start gap-3">
+                <div class="w-10 h-10 rounded-full ${isInc ? 'text-green-600' : 'text-red-500'} flex items-center justify-center shrink-0 no-print"
+                     style="background: ${isInc ? 'rgba(34,197,94,.12)' : 'rgba(239,68,68,.12)'}">
+                  <span class="material-symbols-rounded text-xl">${isInc ? 'arrow_downward' : 'arrow_upward'}</span>
+                </div>
+                <div>
+                  <p class="text-sm font-extrabold line-clamp-1 break-all" style="color: var(--fg0)">${clean(f.note) || '-'}</p>
+                  <div class="flex items-center gap-2 mt-1">
+                    <p class="text-[10px] font-bold text-slate-400">${dt}</p>
+                    ${delBtn}
+                  </div>
+                </div>
+              </div>
+              <p class="text-sm font-extrabold whitespace-nowrap ${isInc?'text-green-600':'text-red-500'}">${isInc?'+':'-'} ${Number(f.amount||0).toLocaleString('id-ID')}</p>
+            </div>
+          `;
+        });
+      } catch(e) { console.error(e); }
+    }
+
+    window.openFinanceModal = () => {
+      if(!can("financeWrite")) { showToast("Akses ditolak.", "error"); return; }
+      const html = `
+        <select id="finT" class="focus-ring w-full p-4 rounded-xl outline-none font-extrabold"
+          style="background: rgba(148,163,184,.10); border: 1px solid rgba(148,163,184,.18); color: var(--fg0)">
+          <option value="income">Pemasukan (+)</option>
+          <option value="expense">Pengeluaran (-)</option>
+        </select>
+        <input id="finA" type="number" class="focus-ring w-full p-4 rounded-xl outline-none font-extrabold placeholder-slate-400"
+          style="background: rgba(148,163,184,.10); border: 1px solid rgba(148,163,184,.18); color: var(--fg0)" placeholder="Jumlah (Rp)">
+        <input id="finN" class="focus-ring w-full p-4 rounded-xl outline-none placeholder-slate-400"
+          style="background: rgba(148,163,184,.10); border: 1px solid rgba(148,163,184,.18); color: var(--fg0)" placeholder="Keterangan Transaksi">
+      `;
+      showModal("Catat Kas", html, async () => {
+        toggleLoader(true);
+        try {
+          await addDoc(collection(db,"financial_records"), {
+            type: $("finT").value, amount: Number($("finA").value || 0), note: $("finN").value, status: "approved", createdAt: serverTimestamp()
+          });
+          await writeAudit("finance_add", { type: $("finT").value, amount: $("finA").value });
+          closeModal(); await loadHomeData(); await loadFinance();
+          showToast("Transaksi disimpan!");
+        } catch(e) { console.error(e); showToast("Gagal simpan.", "error"); }
+        finally { toggleLoader(false); }
+      });
+    };
+
+    // ===== EVENTS =====
+    async function loadActivities() {
+      const list = $("actList"); if(!list) return;
+      list.innerHTML = "";
+      try {
+        const snap = await getDocs(query(collection(db, "activities"), orderBy("date", "asc")));
+        if(snap.empty) { list.innerHTML = '<p class="text-center text-sm mt-10" style="color: rgba(148,163,184,.95)">Belum ada kegiatan.</p>'; return; }
+
+        snap.forEach(d => {
+          const x = d.data() || {};
+          const delBtn = can("eventsWrite") ? `
+            <button onclick="deleteDocData('activities','${d.id}')" class="tap absolute bottom-2 right-2 rounded-full p-2 z-20 active:scale-90 transition-transform no-print"
+                    style="background: rgba(255,255,255,.78); color: rgb(239,68,68); border: 1px solid rgba(148,163,184,.18)">
+              <span class="material-symbols-rounded text-lg">delete</span>
+            </button>
+          ` : ``;
+
+          list.innerHTML += `
+            <div class="glass-card p-0 rounded-2xl overflow-hidden flex h-28 relative group">
+              <img src="${x.cover?.url || 'https://via.placeholder.com/150'}" class="w-28 h-full object-cover">
+              <div class="p-4 flex flex-col justify-center w-full min-w-0">
+                <div class="w-fit px-2 py-0.5 rounded text-[9px] font-extrabold uppercase mb-1"
+                     style="background: rgba(37,99,235,.12); color: rgba(37,99,235,.95)">${clean(x.date) || '-'}</div>
+                <h3 class="text-sm font-extrabold line-clamp-2 leading-tight" style="color: var(--fg0)">${clean(x.title) || '-'}</h3>
+                <p class="text-[10px] text-slate-400 line-clamp-1 flex items-center gap-1 mt-1.5">
+                  <span class="material-symbols-rounded text-[12px]">location_on</span> ${clean(x.location) || '-'}
+                </p>
+              </div>
+              ${delBtn}
+            </div>
+          `;
+        });
+      } catch(e) { console.error(e); }
+    }
+
+    window.openActivityModal = () => {
+      if(!can("eventsWrite")) { showToast("Akses ditolak.", "error"); return; }
+      const html = `
+        <input id="actT" class="focus-ring w-full p-4 rounded-xl outline-none font-extrabold placeholder-slate-400"
+          style="background: rgba(148,163,184,.10); border: 1px solid rgba(148,163,184,.18); color: var(--fg0)" placeholder="Judul Acara">
+        <div class="grid grid-cols-2 gap-3">
+          <input id="actD" type="date" class="focus-ring w-full p-4 rounded-xl outline-none text-sm"
+            style="background: rgba(148,163,184,.10); border: 1px solid rgba(148,163,184,.18); color: var(--fg0)">
+          <input id="actL" class="focus-ring w-full p-4 rounded-xl outline-none placeholder-slate-400"
+            style="background: rgba(148,163,184,.10); border: 1px solid rgba(148,163,184,.18); color: var(--fg0)" placeholder="Lokasi">
+        </div>
+        <p class="text-xs font-extrabold mt-3" style="color: rgba(148,163,184,.95)">Upload Cover Image</p>
+        <input id="actF" type="file"
+          class="w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-brand-primary file:text-white hover:file:bg-slate-700">
+      `;
+      showModal("Acara Baru", html, async () => {
+        toggleLoader(true);
+        try {
+          let cover = null;
+          if($("actF").files.length > 0) cover = await uploadToCloudinary($("actF").files[0]);
+          await addDoc(collection(db,"activities"), {
+            title:$("actT").value, date:$("actD").value, location:$("actL").value, cover, status:"approved", createdAt:serverTimestamp()
+          });
+          await writeAudit("activity_add", { title: $("actT").value, date: $("actD").value });
+          closeModal(); await loadHomeData(); await loadActivities();
+          showToast("Kegiatan dibuat!");
+        } catch(e) { console.error(e); showToast("Gagal simpan.", "error"); }
+        finally { toggleLoader(false); }
+      });
+    };
+
+    // ===== ALERTS =====
+    async function loadNotifications() {
+      const list = $("nList"); if(!list) return;
+      list.innerHTML = "";
+      try {
+        const snap = await getDocs(query(collection(db, "notifications"), orderBy("createdAt", "desc")));
+        if(snap.empty) { list.innerHTML = '<p class="text-center text-sm mt-10" style="color: rgba(148,163,184,.95)">Belum ada pengumuman.</p>'; return; }
+
+        snap.forEach(d => {
+          const n = d.data() || {};
+          const important = n.level === 'important';
+          const delBtn = can("alertsWrite") ? `
+            <button onclick="deleteDocData('notifications','${d.id}')" class="tap text-slate-300 hover:text-red-500 active:scale-90 transition-transform no-print">
+              <span class="material-symbols-rounded text-lg">close</span>
+            </button>
+          ` : ``;
+
+          list.innerHTML += `
+            <div class="glass-card p-5 rounded-2xl shadow-sm relative animate-[slideInTop_.2s] border-l-4"
+                 style="border-left-color: ${important ? '#ef4444' : '#F97316'}">
+              <div class="flex justify-between items-start mb-2">
+                <h4 class="text-sm font-extrabold uppercase tracking-wide flex items-center gap-2" style="color: var(--fg0)">
+                  ${important ? '<span class="material-symbols-rounded text-red-500 text-sm">warning</span>' : '<span class="material-symbols-rounded text-accent text-sm">info</span>'}
+                  ${clean(n.title) || '-'}
+                </h4>
+                ${delBtn}
+              </div>
+              <p class="text-xs leading-relaxed" style="color: rgba(148,163,184,.95)">${clean(n.body) || ''}</p>
+            </div>
+          `;
+        });
+      } catch(e) { console.error(e); }
+    }
+
+    window.openAlertModal = () => {
+      if(!can("alertsWrite")) { showToast("Akses ditolak.", "error"); return; }
+      const html = `
+        <input id="notT" class="focus-ring w-full p-4 rounded-xl outline-none font-extrabold placeholder-slate-400"
+          style="background: rgba(148,163,184,.10); border: 1px solid rgba(148,163,184,.18); color: var(--fg0)" placeholder="Judul Pengumuman">
+        <textarea id="notB" class="focus-ring w-full p-4 rounded-xl outline-none h-24 placeholder-slate-400 resize-none"
+          style="background: rgba(148,163,184,.10); border: 1px solid rgba(148,163,184,.18); color: var(--fg0)" placeholder="Isi pesan..."></textarea>
+        <select id="notL" class="focus-ring w-full p-4 rounded-xl outline-none font-extrabold"
+          style="background: rgba(148,163,184,.10); border: 1px solid rgba(148,163,184,.18); color: var(--fg0)">
+          <option value="normal">Tipe: Info Biasa</option>
+          <option value="important">Tipe: PENTING!</option>
+        </select>
+      `;
+      showModal("Buat Info", html, async () => {
+        toggleLoader(true);
+        try {
+          await addDoc(collection(db,"notifications"), { title:$("notT").value, body:$("notB").value, level:$("notL").value, createdAt:serverTimestamp() });
+          await writeAudit("notification_add", { title: $("notT").value, level: $("notL").value });
+          closeModal(); await loadHomeData(); await loadNotifications();
+          showToast("Pengumuman disiarkan!");
+        } catch(e) { console.error(e); showToast("Gagal kirim info.", "error"); }
+        finally { toggleLoader(false); }
+      });
+    };
+
+    // ===== INVENTORY =====
+    async function loadInventory() {
+      const list = $("invList"); if(!list) return;
+      list.innerHTML = "";
+      try {
+        const snap = await getDocs(query(collection(db, "inventory"), orderBy("name")));
+        if(snap.empty) { list.innerHTML = '<p class="col-span-2 text-center text-xs mt-4" style="color: rgba(148,163,184,.95)">Belum ada barang.</p>'; return; }
+
+        snap.forEach(d => {
+          const i = d.data() || {};
+          const delBtn = can("invWrite") ? `
+            <button onclick="deleteDocData('inventory','${d.id}')" class="tap absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center shadow-sm"
+                    style="background: rgba(255,255,255,.75); color: rgb(239,68,68)">
+              <span class="material-symbols-rounded text-sm">delete</span>
+            </button>
+          ` : ``;
+
+          list.innerHTML += `
+            <div class="glass-card p-3 rounded-2xl flex flex-col justify-between h-40 relative group overflow-hidden">
+              <div>
+                ${i.image?.url ? `<img src="${i.image.url}" class="w-full h-12 object-cover rounded-lg mb-2 opacity-90">` :
+                `<div class="p-1.5 rounded-lg mb-2 w-fit" style="background: rgba(124,58,237,.12); color: rgba(124,58,237,.95)">
+                    <span class="material-symbols-rounded text-lg">package_2</span>
+                 </div>`}
+                <div class="flex justify-between items-start">
+                  <span class="text-[10px] font-extrabold px-2 py-0.5 rounded"
+                        style="background: ${i.status === 'good' ? 'rgba(34,197,94,.12)' : 'rgba(239,68,68,.12)'}; color: ${i.status === 'good' ? 'rgb(34,197,94)' : 'rgb(239,68,68)'}">
+                    ${clean(i.qty)} Unit
+                  </span>
+                </div>
+                <h4 class="text-xs font-extrabold line-clamp-1 mt-1" style="color: var(--fg0)">${clean(i.name || "-")}</h4>
+                <p class="text-[10px] line-clamp-1" style="color: rgba(148,163,184,.95)">${clean(i.desc || '')}</p>
+              </div>
+              ${delBtn}
+            </div>
+          `;
+        });
+      } catch(e) { console.error(e); }
+    }
+
+    window.openInventoryModal = () => {
+      if(!can("invWrite")) { showToast("Akses ditolak.", "error"); return; }
+      const html = `
+        <div class="mb-3 border-2 border-dashed rounded-xl p-4 text-center cursor-pointer tap"
+             style="border-color: rgba(148,163,184,.25); background: rgba(148,163,184,.06)"
+             onclick="$('invFile').click()">
+          <p class="text-xs font-extrabold" style="color: rgba(148,163,184,.95)">Klik untuk upload foto barang</p>
+          <input id="invFile" type="file" class="hidden" accept="image/*">
+        </div>
+        <input id="invN" class="focus-ring w-full p-4 rounded-xl outline-none font-extrabold placeholder-slate-400"
+          style="background: rgba(148,163,184,.10); border: 1px solid rgba(148,163,184,.18); color: var(--fg0)" placeholder="Nama Barang">
+        <input id="invQ" type="number" class="focus-ring w-full p-4 rounded-xl outline-none font-extrabold placeholder-slate-400"
+          style="background: rgba(148,163,184,.10); border: 1px solid rgba(148,163,184,.18); color: var(--fg0)" placeholder="Jumlah Unit">
+        <textarea id="invD" class="focus-ring w-full p-4 rounded-xl outline-none h-20 placeholder-slate-400 resize-none"
+          style="background: rgba(148,163,184,.10); border: 1px solid rgba(148,163,184,.18); color: var(--fg0)" placeholder="Kondisi / Lokasi Penyimpanan"></textarea>
+        <select id="invS" class="focus-ring w-full p-4 rounded-xl outline-none font-extrabold"
+          style="background: rgba(148,163,184,.10); border: 1px solid rgba(148,163,184,.18); color: var(--fg0)">
+          <option value="good">Kondisi Baik</option>
+          <option value="bad">Rusak / Perlu Servis</option>
+        </select>
+      `;
+      showModal("Tambah Inventaris", html, async () => {
+        toggleLoader(true);
+        try {
+          let imgData = null;
+          const fileInput = $("invFile");
+          if (fileInput.files.length > 0) imgData = await uploadToCloudinary(fileInput.files[0]);
+          await addDoc(collection(db, "inventory"), {
+            name: $("invN").value, qty: Number($("invQ").value || 0), desc: $("invD").value, status: $("invS").value, image: imgData, createdAt: serverTimestamp()
+          });
+          await writeAudit("inventory_add", { name: $("invN").value, qty: $("invQ").value });
+          closeModal(); await loadInventory();
+          showToast("Barang ditambahkan!");
+        } catch(e) { console.error(e); showToast("Gagal simpan barang.", "error"); }
+        finally { toggleLoader(false); }
+      });
+    }
+
+    // ===== DELETE DOC (role-gated by UI, server-side by rules) =====
+    window.deleteDocData = async (col, id) => {
+      if(!confirm("Hapus data ini permanen?")) return;
+      toggleLoader(true);
+      try {
+        await deleteDoc(doc(db, col, id));
+        await writeAudit("delete", { col, id });
+        showToast("Data dihapus.");
+
+        if(col==='users') { await loadUsers(); if(MANAGE_MODE) await loadMembers(); }
+        else if(col==='financial_records') await loadFinance();
+        else if(col==='activities') await loadActivities();
+        else if(col==='notifications') await loadNotifications();
+        else if(col==='inventory') await loadInventory();
+
+        await loadHomeData();
+      } catch(e) { console.error(e); showToast("Gagal menghapus (Akses Ditolak).", "error"); }
+      finally { toggleLoader(false); }
+    };
+
+    // =========================
+    // WIDGET: CUACA (Open-Meteo)
+    // =========================
+    window.refreshWeather = () => initWeather();
+
+    function wxCodeToText(code){
+      const map = {
+        0:"Cerah", 1:"Sebagian cerah", 2:"Berawan", 3:"Mendung",
+        45:"Berkabut", 48:"Kabut",
+        51:"Gerimis ringan", 53:"Gerimis", 55:"Gerimis lebat",
+        61:"Hujan ringan", 63:"Hujan", 65:"Hujan lebat",
+        71:"Salju ringan", 73:"Salju", 75:"Salju lebat",
+        80:"Hujan lokal", 81:"Hujan lokal", 82:"Hujan deras",
+        95:"Badai", 96:"Badai + es", 99:"Badai + es"
+      };
+      return map[code] || `Cuaca (${code})`;
+    }
+    function wxCodeToIcon(code){
+      if(code === 0) return "sunny";
+      if([1,2].includes(code)) return "partly_cloudy_day";
+      if([3,45,48].includes(code)) return "cloud";
+      if([51,53,55].includes(code)) return "grain";
+      if([61,63,65,80,81,82].includes(code)) return "rainy";
+      if([95,96,99].includes(code)) return "thunderstorm";
+      return "cloud";
+    }
+
+    async function initWeather(){
+      const cityEl = document.getElementById("wxCity");
+      const tempEl = document.getElementById("wxTemp");
+      const humEl  = document.getElementById("wxHum");
+      const windEl = document.getElementById("wxWind");
+      const descEl = document.getElementById("wxDesc");
+      const timeEl = document.getElementById("wxTime");
+      const iconEl = document.getElementById("wxIcon");
+
+      try{
+        let lat = -6.966667, lon = 110.416667;
+        let cityName = "Semarang";
+
+        await new Promise((resolve) => {
+          if(!navigator.geolocation) return resolve();
+          navigator.geolocation.getCurrentPosition(
+            (pos)=>{ lat = pos.coords.latitude; lon = pos.coords.longitude; cityName = "Lokasi Anda"; resolve(); },
+            ()=> resolve(),
+            { enableHighAccuracy: false, timeout: 5000, maximumAge: 600000 }
+          );
+        });
+
+        if(cityEl) cityEl.textContent = cityName;
+
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code&timezone=Asia%2FJakarta`;
+        const res = await fetch(url);
+        const data = await res.json();
+        const c = data.current;
+
+        const temp = Math.round(c.temperature_2m);
+        const hum  = Math.round(c.relative_humidity_2m);
+        const wind = Math.round(c.wind_speed_10m);
+        const code = c.weather_code;
+
+        if(tempEl) tempEl.textContent = `${temp}°`;
+        if(humEl) humEl.textContent = `${hum}%`;
+        if(windEl) windEl.textContent = `${wind} km/h`;
+        if(descEl) descEl.textContent = wxCodeToText(code);
+        if(iconEl) iconEl.textContent = wxCodeToIcon(code);
+        if(timeEl) timeEl.textContent = new Date().toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' });
+
+      }catch(e){
+        console.warn("Weather error:", e);
+        if(cityEl) cityEl.textContent = "Gagal memuat cuaca";
+        if(descEl) descEl.textContent = "Cek koneksi / izin lokasi";
+      }
+    }
+
+    // ===============================
+    // WIDGET: SHOLAT + IMSAK (Aladhan)
+    // ===============================
+    window.refreshPrayerTimes = () => initPrayerTimes();
+
+    let PRAYER_CACHE = null;
+
+    async function initPrayerTimes(){
+      try{
+        const city = "Semarang";
+        const country = "Indonesia";
+        const url = `https://api.aladhan.com/v1/timingsByCity?city=${encodeURIComponent(city)}&country=${encodeURIComponent(country)}&method=11`;
+        const res = await fetch(url);
+        const json = await res.json();
+        const t = json?.data?.timings;
+
+        PRAYER_CACHE = t;
+
+        document.getElementById("prCity").textContent = `${city} (WIB)`;
+        document.getElementById("prImsak").textContent   = t.Imsak || "--:--";
+        document.getElementById("prFajr").textContent    = t.Fajr  || "--:--";
+        document.getElementById("prDhuhr").textContent   = t.Dhuhr || "--:--";
+        document.getElementById("prAsr").textContent     = t.Asr   || "--:--";
+        document.getElementById("prMaghrib").textContent = t.Maghrib || "--:--";
+        document.getElementById("prIsha").textContent    = t.Isha  || "--:--";
+
+        updateNextPrayerCountdown();
+      }catch(e){
+        console.warn("Prayer error:", e);
+        document.getElementById("prCity").textContent = "Gagal memuat jadwal";
+      }
+    }
+
+    function toTodayDateTime(hhmm){
+      const [hh, mm] = (hhmm || "00:00").split(":").map(x=>parseInt(x,10));
+      const now = new Date();
+      return new Date(now.getFullYear(), now.getMonth(), now.getDate(), hh||0, mm||0, 0);
+    }
+
+    function updateNextPrayerCountdown(){
+      if(!PRAYER_CACHE) return;
+
+      const order = [
+        { key:"Imsak", name:"Imsak" },
+        { key:"Fajr", name:"Subuh" },
+        { key:"Dhuhr", name:"Dzuhur" },
+        { key:"Asr", name:"Ashar" },
+        { key:"Maghrib", name:"Maghrib" },
+        { key:"Isha", name:"Isya" }
+      ];
+
+      const now = new Date();
+      let next = null;
+
+      for(const p of order){
+        const dt = toTodayDateTime(PRAYER_CACHE[p.key]);
+        if(dt > now){ next = { ...p, dt }; break; }
+      }
+      if(!next){
+        const dtTomorrow = toTodayDateTime(PRAYER_CACHE["Imsak"]);
+        dtTomorrow.setDate(dtTomorrow.getDate()+1);
+        next = { key:"Imsak", name:"Imsak", dt: dtTomorrow };
+      }
+
+      const diff = next.dt - now;
+      const totalSec = Math.max(0, Math.floor(diff/1000));
+      const hh = String(Math.floor(totalSec/3600)).padStart(2,"0");
+      const mm = String(Math.floor((totalSec%3600)/60)).padStart(2,"0");
+
+      document.getElementById("prNextName").textContent = next.name;
+      document.getElementById("prNextCountdown").textContent = `${hh}:${mm}`;
+    }
+
+    setInterval(updateNextPrayerCountdown, 15000);
+
+    window.openPrayerDetail = () => {
+      if(!PRAYER_CACHE){
+        showToast("Jadwal belum termuat", "error");
+        return;
+      }
+      const t = PRAYER_CACHE;
+      const html = `
+        <div class="space-y-2">
+          <div class="glass-inset rounded-xl p-3 flex justify-between"><span class="text-xs font-extrabold">Imsak</span><span class="text-xs font-extrabold">${t.Imsak}</span></div>
+          <div class="glass-inset rounded-xl p-3 flex justify-between"><span class="text-xs font-extrabold">Subuh</span><span class="text-xs font-extrabold">${t.Fajr}</span></div>
+          <div class="glass-inset rounded-xl p-3 flex justify-between"><span class="text-xs font-extrabold">Terbit</span><span class="text-xs font-extrabold">${t.Sunrise || "-"}</span></div>
+          <div class="glass-inset rounded-xl p-3 flex justify-between"><span class="text-xs font-extrabold">Dzuhur</span><span class="text-xs font-extrabold">${t.Dhuhr}</span></div>
+          <div class="glass-inset rounded-xl p-3 flex justify-between"><span class="text-xs font-extrabold">Ashar</span><span class="text-xs font-extrabold">${t.Asr}</span></div>
+          <div class="glass-inset rounded-xl p-3 flex justify-between"><span class="text-xs font-extrabold">Maghrib</span><span class="text-xs font-extrabold">${t.Maghrib}</span></div>
+          <div class="glass-inset rounded-xl p-3 flex justify-between"><span class="text-xs font-extrabold">Isya</span><span class="text-xs font-extrabold">${t.Isha}</span></div>
+        </div>
+      `;
+      showModal("Detail Jadwal Sholat", html, null);
+    };
+
+    // ==========================
+    // WIDGET: ARISAN (Firestore)
+    // ==========================
+    // collection: arisan_draws
+    // fields: month, winnerName, winnerUid, prize, drawnAt
+    async function loadLatestArisan(){
+      try{
+        const snap = await getDocs(query(collection(db, "arisan_draws"), orderBy("drawnAt","desc"), limit(1)));
+        if(snap.empty){
+          $("arMonth").textContent = "Belum ada data undian";
+          $("arWinner").textContent = "-";
+          $("arPrize").textContent = "Hadiah: -";
+          $("arDate").textContent = "-";
+          return;
+        }
+        const d = snap.docs[0].data() || {};
+        $("arMonth").textContent = d.month || "Arisan";
+        $("arWinner").textContent = d.winnerName || "-";
+        $("arPrize").textContent = `Hadiah: ${d.prize || "-"}`;
+        const dt = d.drawnAt?.seconds ? new Date(d.drawnAt.seconds*1000).toLocaleDateString('id-ID') : "-";
+        $("arDate").textContent = dt;
+      }catch(e){
+        console.warn("Arisan error:", e);
+        $("arMonth").textContent = "Gagal memuat";
+      }
+    }
+    window.loadLatestArisan = loadLatestArisan;
+
+    window.openArisanHistory = async () => {
+      toggleLoader(true);
+      try{
+        const snap = await getDocs(query(collection(db, "arisan_draws"), orderBy("drawnAt","desc"), limit(12)));
+        let html = `<div class="space-y-2">`;
+        if(snap.empty){
+          html += `<div class="text-xs font-extrabold" style="color: rgba(148,163,184,.95)">Belum ada riwayat.</div>`;
+        } else {
+          snap.forEach(docu=>{
+            const a = docu.data() || {};
+            const dt = a.drawnAt?.seconds ? new Date(a.drawnAt.seconds*1000).toLocaleString('id-ID') : "-";
+            html += `
+              <div class="glass-inset rounded-xl p-3">
+                <div class="text-xs font-extrabold" style="color: var(--fg0)">${clean(a.month||"Arisan")} • ${dt}</div>
+                <div class="text-[10px] font-extrabold mt-1" style="color: rgba(148,163,184,.95)">Pemenang: ${clean(a.winnerName||"-")}</div>
+                <div class="text-[10px] font-extrabold" style="color: rgba(148,163,184,.95)">Hadiah: ${clean(a.prize||"-")}</div>
+              </div>
+            `;
+          });
+        }
+        html += `</div>`;
+        showModal("Riwayat Arisan (12 terakhir)", html, null);
+      }finally{
+        toggleLoader(false);
+      }
+    };
+
+    window.drawArisanWinner = async () => {
+      if(!can("arisanDraw")){
+        showToast("Tidak punya izin undi.", "error");
+        return;
+      }
+      toggleLoader(true);
+      try{
+        const uSnap = await getDocs(query(collection(db,"users"), orderBy("name")));
+        const users = [];
+        uSnap.forEach(x=>{
+          const u = x.data();
+          if(u && u.name) users.push({ id: x.id, name: u.name });
+        });
+
+        if(users.length < 2){
+          showToast("Peserta arisan belum cukup.", "error");
+          return;
+        }
+
+        const pick = users[Math.floor(Math.random()*users.length)];
+        const now = new Date();
+        const month = now.toLocaleString('id-ID', { month:'long', year:'numeric' });
+
+        await addDoc(collection(db,"arisan_draws"),{
+          month,
+          winnerUid: pick.id,
+          winnerName: pick.name,
+          prize: "Uang arisan",
+          drawnAt: serverTimestamp()
+        });
+
+        await writeAudit("arisan_draw", { month, winnerUid: pick.id, winnerName: pick.name });
+
+        showToast("Undian berhasil dibuat!");
+        await loadLatestArisan();
+      }catch(e){
+        console.error(e);
+        showToast("Gagal undi.", "error");
+      }finally{
+        toggleLoader(false);
+      }
+    };
+
+  </script>
+</body>
+</html>
